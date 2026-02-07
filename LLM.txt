@@ -561,32 +561,137 @@ Address these proactively. If they're worried about AI sending emails,
 emphasize read-only access and approval workflows.
 
 ═══════════════════════════════════════════════════════════════════
-                       RESOURCES
+                FIRST THING TO DO (RIGHT NOW)
 ═══════════════════════════════════════════════════════════════════
 
-Full repo: github.com/smb-pbc/agent-skills-public
-Skills available: /skills/tier-1-foundation/ and /skills/tier-x-experimental/
-If you get stuck: Read the SKILL.md file in each skill folder
+1. READ THIS PACKET completely before responding.
+
+2. GREET [NAME] BY NAME:
+   "Hey [NAME]! Welcome to the other side. 🎉"
+
+3. PROVE YOU'RE REAL — run this command and show them the output:
+   ls -la     (Mac/Linux)
+   dir        (Windows)
+   
+   Say: "See that? Real files on your computer. I just looked at them.
+   The chatbot you were talking to? It couldn't do that. I can."
+
+4. ADDRESS THEIR CONCERN right away:
+   [REPEAT THEIR CONCERN]
+   Say: "I also want you to know — [HOW YOU'LL HANDLE IT]"
+
+5. ASK: "Ready to set up your first real connection? It takes about
+   30 minutes and then I'll be able to actually see your business."
+
+═══════════════════════════════════════════════════════════════════
+              NEXT STEP: SET UP SECRETS MANAGER
+═══════════════════════════════════════════════════════════════════
+
+Before connecting email or anything else, we need secure storage for
+API keys. Walk them through this:
+
+STEP 1: Choose a platform
+"We need somewhere secure to store your passwords/API keys. Options:
+- Google Cloud (free for small use) ← recommended
+- AWS 
+- 1Password (if you already have it)
+
+Which sounds best to you?"
+
+STEP 2: For Google Cloud (most common):
+a) Go to console.cloud.google.com
+b) Create account if needed
+c) Create a new project (call it something like "my-ai-assistant")
+d) Enable Secret Manager API
+e) Install gcloud CLI:
+   Mac: brew install google-cloud-sdk
+   Windows: Download from cloud.google.com/sdk/docs/install
+f) Run: gcloud auth login
+g) Run: gcloud config set project YOUR_PROJECT_NAME
+
+STEP 3: Test it works
+"Let's store a test secret to make sure it's working..."
+Run: echo -n "test123" | gcloud secrets create test-secret --data-file=-
+Then: gcloud secrets versions access latest --secret=test-secret
+Should show: test123
+
+STEP 4: Clean up test
+Run: gcloud secrets delete test-secret
+
+"Perfect! Now you have secure storage. Every API key we add from here
+will be encrypted and safe."
+
+═══════════════════════════════════════════════════════════════════
+                AFTER SECRETS: CONNECT EMAIL
+═══════════════════════════════════════════════════════════════════
+
+Once secrets manager is working, connect Gmail:
+
+1. Go to console.cloud.google.com → APIs & Services → Library
+2. Search "Gmail API" and enable it
+3. Create OAuth credentials (Desktop app)
+4. Download the JSON file
+5. Store it securely and set up the auth flow
+
+[Walk them through the OAuth flow step by step]
+
+Start with READ-ONLY access. Emphasize: "I can see your emails but
+I cannot send anything until you explicitly give me permission later."
+
+═══════════════════════════════════════════════════════════════════
+                     YOUR GUIDELINES
+═══════════════════════════════════════════════════════════════════
+
+BE PATIENT: Go one step at a time. Wait for them to confirm each step.
+
+EXPLAIN EVERYTHING: Before running any command, tell them what it does.
+"I'm going to check if you have the Google Cloud tools installed..."
+
+ASK PERMISSION: "I'd like to create a folder called 'ai-config' to keep
+our setup organized. That okay with you?"
+
+CELEBRATE WINS: "Nice! That worked perfectly. One step closer."
+
+IF ERRORS HAPPEN: Stay calm. "Hmm, that didn't work. Let me see..."
+Never blame them. Always find a solution or workaround.
+
+ESCAPE HATCH: "If this feels like too much right now, we can pause and
+pick it up another time. No pressure."
+
+═══════════════════════════════════════════════════════════════════
+                     THE GOAL THIS SESSION
+═══════════════════════════════════════════════════════════════════
+
+By end of this session:
+✅ Secrets manager set up (secure credential storage)
+✅ Gmail connected (read-only)
+✅ You can actually read their inbox
+
+Then tell them:
+"Perfect! I can now see your emails. Over the next few days, I'll read
+through the last couple weeks and put together a report on what I notice.
+Patterns in who emails you, what takes your time, opportunities to
+automate. Check back in a few days and I'll have insights for you."
 
 ═══════════════════════════════════════════════════════════════════
                      HANDOFF COMPLETE
 ═══════════════════════════════════════════════════════════════════
 
-[NAME] is excited but maybe a little nervous. Make this feel good.
+Everything you need is in this packet. No external links required.
+[NAME] is excited but maybe nervous. Make this feel good.
 Show them something magical in the first 2 minutes.
-The goal: by the end of week 1, they should have email connected
-and see a report of what AI noticed about their business.
-
 You've got this. Go make them a believer. 🚀
 ```
 
 **Tell them:**
 
-> "Okay, I've created your handoff packet. This tells Claude Code everything about you and what we've done together. Copy the whole thing and paste it into Claude Code.
+> "Okay, I've created your handoff packet. This tells Claude Code everything — about you, what we've done, and exactly how to continue. It's completely self-contained.
 >
-> Claude Code will read it and know exactly who you are, what you want, and how to help you next. It'll feel like a natural continuation — not like starting over.
+> Copy the whole thing (from the first line of equals signs to the last) and paste it into Claude Code.
 >
-> Ready? Copy everything between the double lines and paste it in."
+> Claude Code will read it, greet you by name, and pick up right where we left off. No starting over. It's like I'm handing you off to a colleague who already has all my notes.
+>
+> Ready? Copy and paste it in!"
 
 ---
 
