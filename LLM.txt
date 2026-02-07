@@ -330,6 +330,83 @@ Your agent runs itself:
 
 ---
 
+## EXPLAINING AGENTS VS SKILLS VS TOOLS
+
+When humans ask "what's the difference?" use these explanations:
+
+### The Simple Version
+
+| Thing | What it IS | What it DOES |
+|-------|-----------|--------------|
+| **Agent** | The brain | Makes decisions, learns, remembers |
+| **Skills** | Knowledge | Tells the agent HOW to do things |
+| **Tools** | Capabilities | Lets the agent actually DO things |
+
+### The Chef Metaphor (use for restaurants/food businesses)
+
+> "Think of the AI agent like a chef. The chef is the person — their brain, their judgment, their creativity.
+>
+> Skills are like recipes and techniques — knowledge the chef references to know HOW to make each dish.
+>
+> Tools are like the oven, knives, and mixer — the equipment that actually DOES the cooking.
+>
+> You don't hire a new chef for every dish — you teach your chef new recipes. The chef uses the equipment to execute the recipes. Same chef, different skills, same tools."
+
+### The Employee Metaphor (use for offices/professional services)
+
+> "Think of the AI agent like hiring a really smart employee.
+>
+> The agent is the employee — their brain, judgment, and personality.
+>
+> Skills are like training manuals and SOPs — knowledge they reference when doing specific tasks.
+>
+> Tools are like their computer, software, and account access — how they actually DO work.
+>
+> When you want your employee to handle QuickBooks, you don't hire a new person — you train them on QuickBooks. The skill is the training manual. The tool is QuickBooks itself."
+
+### The GitHub Actions Metaphor (use for technical folks)
+
+> "Skills are like GitHub Actions workflow files. Tools are like the runner that executes them.
+>
+> A workflow file can reference scripts and commands — it looks powerful. But the YAML doesn't execute anything. The runner does.
+>
+> Skills describe WHAT should happen. Tools (via MCP) make it possible for anything to happen at all.
+>
+> Without skills, you have a powerful runner with no workflows. Without tools, you have beautiful YAML that can't do anything."
+
+### Why Skills Instead of More Agents?
+
+If they ask "why not just have 20 different AI agents?":
+
+> "One agent with 20 skills is usually better than 20 separate agents:
+>
+> **Memory** — One agent remembers your preferences across everything. 'You like reports by 9am' applies to email summaries AND sales reports.
+>
+> **Context** — One agent sees the whole picture. 'Sales are down AND ad spend is up' is one insight, not two agents that don't talk to each other.
+>
+> **Simplicity** — One thing to configure, one thing to talk to, one relationship to build.
+>
+> **Composability** — Skills build on each other. Secrets-manager enables Gmail, which enables daily-digest. One agent chains them together naturally."
+
+### When Multiple Agents Make Sense
+
+> "You might want multiple agents if:
+> - You need different personalities for different contexts (customer service vs internal ops)
+> - Security requires isolation (don't want one agent accessing everything)
+> - You're doing parallel processing (multiple agents working simultaneously)
+>
+> But for most small businesses: one agent, many skills is the way to go."
+
+### The Bottom Line
+
+> "Skills without tools = A chef with recipes but no kitchen
+> Tools without skills = A kitchen full of equipment but no idea what to cook
+> Agent without either = A smart person with nothing to work with
+>
+> This repo gives agents skills. The agent already has tools (via Claude Code, etc.). The human's job is just to add skills as they need them."
+
+---
+
 ## INSTALLATION GUIDE (STEP BY STEP)
 
 This is what you walk them through. Go ONE STEP AT A TIME. Wait for confirmation before moving on.

@@ -86,6 +86,69 @@ Think of it like this:
 
 ---
 
+## 🧠 Agents vs Skills vs Tools: What's the Difference?
+
+This can get confusing fast. Here's the simple version:
+
+### The Chef Metaphor
+
+| Concept | In a Kitchen | For Your Business |
+|---------|--------------|-------------------|
+| **Agent** | The chef (the person) | The AI running on your computer |
+| **Skills** | Recipes + techniques | Instructions for how to do specific tasks |
+| **Tools** | Oven, knives, mixer | APIs, databases, email servers |
+
+- You don't hire a new chef for every dish — you teach your chef new recipes
+- The chef uses equipment (tools) to execute the recipes (skills)
+- The chef's judgment, creativity, and decision-making stay constant
+
+### The Employee Metaphor
+
+Think of an AI agent like hiring a really smart employee:
+
+- **Agent** = The employee (their brain, judgment, personality)
+- **Skills** = Training manuals and SOPs (knowledge they reference)
+- **Tools** = Computer, software, and account access (how they actually DO work)
+
+When you want your employee to handle QuickBooks, you don't hire a new person — you train them on QuickBooks. The skill is the training manual. The tool is QuickBooks itself.
+
+### Why Skills Instead of More Agents?
+
+You might wonder: *"Why not just have 20 different AI agents for 20 different tasks?"*
+
+**One agent with 20 skills is better because:**
+
+1. **Memory** — One agent remembers your preferences across everything. "Corey likes reports by 9am" applies to email summaries AND sales reports.
+
+2. **Context** — One agent sees the whole picture. "Sales are down AND ad spend is up" is one insight, not two separate agents that don't talk to each other.
+
+3. **Simplicity** — One thing to configure, one thing to talk to, one relationship to build.
+
+4. **Composability** — Skills build on each other. Secrets-manager enables Gmail, which enables daily-digest. One agent chains them together naturally.
+
+**When you might want multiple agents:**
+- Different personalities for different contexts (customer service vs internal ops)
+- Security isolation (don't want one agent accessing everything)
+- Parallel processing (multiple agents working simultaneously)
+
+But for most small businesses: **one agent, many skills** is the way.
+
+### The Bottom Line
+
+| Thing | What it IS | What it DOES |
+|-------|-----------|--------------|
+| **Agent** | The brain | Makes decisions, learns, remembers |
+| **Skills** | Knowledge | Tells the agent HOW to do things |
+| **Tools** | Capabilities | Lets the agent actually DO things |
+
+Skills without tools = A chef with recipes but no kitchen
+Tools without skills = A kitchen full of equipment but no idea what to cook
+Agent without either = A smart person with nothing to work with
+
+**This repo gives your agent skills. The agent already has tools (via Claude Code, etc.). Your job is just to add skills as you need them.**
+
+---
+
 ## 🛠️ How to Install an AI Agent (15 minutes)
 
 This is the one-time setup that lets AI actually do things on your computer.
