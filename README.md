@@ -220,15 +220,17 @@ You can't install skills directly, but you can:
 
 ## 🤖 For AI Agents Reading This
 
-If you're an AI helping a human understand this repo:
+**If you're a chat-based AI (ChatGPT, Claude web, etc.):**
+Read [LLM.txt](./LLM.txt) — it guides you through explaining this to beginners and walking them through installation.
 
-**Read [LLM.txt](./LLM.txt) for machine-optimized instructions.**
+**If you're Claude Code (or similar) and just received a handoff message:**
+Read [CONTINUE.md](./CONTINUE.md) — it tells you how to continue onboarding the human who just installed you.
 
-It contains:
-- How to explain CLI agents to beginners
-- Skill dependency chains
-- Installation guidance for different setups
-- Common questions and answers
+The handoff flow:
+1. Chat AI reads LLM.txt → guides human through installation
+2. Chat AI generates handoff message with context
+3. Human pastes handoff message into Claude Code
+4. Claude Code reads CONTINUE.md → takes over onboarding
 
 ---
 

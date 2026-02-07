@@ -426,13 +426,85 @@ What folder am I in right now? And list the files here.
 
 ---
 
-### Step 6: Celebrate + Next Steps
+### Step 6: Verify Before Handoff
 
-> "You just did something 99% of people haven't figured out yet. You have an AI agent running on your computer.
+Before handing off, make sure it's actually working. Ask them to:
+
+> "Before we continue, I want to make sure everything is working. Can you:
 >
-> Now we can start connecting it to your business tools. The first thing I recommend: let's connect your email so Claude can actually see your business.
+> 1. In Claude Code, type: 'What folder am I in right now?'
+> 2. Tell me (or screenshot) what it says back
 >
-> Ready?"
+> I want to make sure Claude can actually see your computer before we move on."
+
+**What to look for:**
+- Claude Code should show a real folder path (like `/Users/john/Documents` or `C:\Users\john`)
+- NOT an error message
+- NOT a generic response like "I can't access your file system"
+
+**If it's not working:** Help them troubleshoot. Maybe they need to restart Claude Code, or there's a permission issue.
+
+**If it IS working:** Time for the handoff.
+
+---
+
+### Step 7: THE HANDOFF (Critical Moment)
+
+This is where you hand them off to Claude Code. Explain why:
+
+> "Okay, here's the exciting part.
+>
+> Everything we've talked about? I couldn't actually DO any of it. I could only explain. That's because I'm just a chatbot in a browser — I can't touch your computer.
+>
+> But Claude Code? It CAN. It's running right on your machine.
+>
+> So I'm going to give you a message to paste into Claude Code. It will tell Claude Code who you are, what kind of business you run, and what we've set up so far. Then Claude Code will take over and actually start connecting your tools.
+>
+> Think of it like... I'm the receptionist who got you checked in. Now I'm handing you off to the specialist who's going to do the real work."
+
+---
+
+### Step 8: Generate the Handoff Message
+
+Create a personalized handoff message for them to copy-paste into Claude Code.
+
+**Ask first:**
+> "Before I create the handoff message, let me confirm a few things:
+> 1. What's your name? (so Claude Code can greet you)
+> 2. What kind of business do you run? (restaurant, retail, contractor, etc.)
+> 3. Are you on Mac, Windows, or Linux?
+> 4. Anything specific you're hoping AI can help with?"
+
+**Then generate this message for them to copy:**
+
+```
+--- START HANDOFF MESSAGE ---
+
+Hi Claude Code! I just got you installed with help from another AI.
+
+Here's my info:
+- Name: [NAME]
+- Business type: [BUSINESS TYPE]
+- Computer: [MAC/WINDOWS/LINUX]
+- Goal: [WHAT THEY WANT TO ACCOMPLISH]
+
+I'm ready for the next steps. The AI that helped me install you said to read this guide:
+https://github.com/smb-pbc/agent-skills-public/blob/main/CONTINUE.md
+
+That guide will tell you how to continue helping me. I'm excited to see what you can do! 🎉
+
+--- END HANDOFF MESSAGE ---
+```
+
+**Then tell them:**
+
+> "Copy that entire message (including the dashes) and paste it into Claude Code. 
+>
+> Claude Code will read the guide and know exactly how to continue. It'll probably do something to show you it's working — like list your files or create a note.
+>
+> This is where the real magic starts. You're about to see AI actually DO things, not just talk about them.
+>
+> Go paste that message into Claude Code, and enjoy the ride! 🚀"
 
 ---
 
