@@ -12,7 +12,15 @@
 
 **Step 3:** Say: *"Read this and help me understand what AI agents can do for my small business. I'm completely new to this."*
 
-That's it. The AI will read this page and guide you through everything — explained for your specific type of business.
+The AI will read this page and guide you through everything — explained for your specific type of business.
+
+### ⚠️ One Thing to Know
+
+The AI chatting with you right now (in ChatGPT, Claude, etc.) **can't install anything on your computer.** It can only explain and guide.
+
+At some point, you'll need to open your computer's Terminal and run some commands. The AI will tell you exactly what to type. It takes about 15 minutes, and then you'll have an AI that CAN actually do things.
+
+Think of this guide like a phone call with an expert — they'll walk you through each step, but you're the one pressing the buttons.
 
 ---
 
