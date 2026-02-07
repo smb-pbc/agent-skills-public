@@ -63,22 +63,44 @@ To use these skills, you'll need one of these "CLI AI agents" (AI that runs on a
 
 ---
 
-## 🎯 The Vision: From Chatbot to Business Operator
+## 🎯 What Your First Week Could Look Like
 
-Most people use AI to answer questions. That's 1% of what's possible.
+**Day 1-2: Connect your email**
 
-With the right skills installed, your AI agent becomes a business operator:
+Once AI can read your inbox, something magical happens — it can actually SEE your business. Not in theory. Actually see what you deal with every day.
 
-```
-Level 0: Chatbot          → Just answers questions
-Level 1: Connected        → Has API keys, can authenticate
-Level 2: Communicator     → Reads email, manages calendar, posts to Slack
-Level 3: Operator         → Pulls sales data, checks inventory, runs reports
-Level 4: Marketer         → Manages ads, sends campaigns, creates content
-Level 5: Autonomous       → Runs daily briefings, monitors health, chains workflows
-```
+**Day 3-5: AI observes**
 
-**These skills get you from Level 0 to Level 5.**
+You don't do anything. AI reads 2 weeks of your emails and learns:
+- Who emails you most
+- What questions keep coming up
+- What's taking your time
+
+**Day 5-7: AI tells YOU what to automate**
+
+Instead of you guessing what would help, AI shows you:
+
+> "You answered 23 emails about delivery times last week. Want me to create an auto-reply?"
+>
+> "You have 5 vendors you email every Monday. Want me to track those and remind you?"
+>
+> "You got 8 customer complaints about the same issue. Want me to flag those instantly?"
+
+**You pick which automations to try.** AI suggests based on your actual patterns. You decide.
+
+---
+
+## 🔐 You Control the Access
+
+This is important: **you decide how much access AI gets.**
+
+| Level | What AI Can Do | Good For |
+|-------|----------------|----------|
+| **Read-only** | See your emails, can't send | Starting out, observing |
+| **Draft** | Write emails, but you approve before sending | Testing automations |
+| **Full** | Send on your behalf | After you trust it |
+
+Start with read-only. Expand later. You're always in control.
 
 ---
 

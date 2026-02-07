@@ -88,17 +88,41 @@ Once they get the vision, explain HOW:
 > That's what 'skills' are. Pre-built instructions that teach the AI how to work with Gmail, Square, QuickBooks, etc.
 > Without skills, the AI has access but doesn't know what to do. With skills, it becomes capable."
 
-### The Path
+### The Recommended First Week
 
-> "So the journey looks like:
+> "Here's what I recommend for your first week:
 >
-> 1. **Install a CLI agent** (Claude Code is the easiest to start)
-> 2. **Set up secrets management** (so API keys are stored safely)
-> 3. **Add skills** (each one gives the AI a new capability)
-> 4. **Connect your services** (Gmail, Square, whatever you use)
-> 5. **Start with one thing** (read emails, check sales, whatever matters to you)
+> **Day 1: Get AI running on your computer** (15 min)
+> Install Claude Code or similar. Now AI has 'hands' — it can see files, run commands.
 >
-> This repo has the skills. Other tools help with steps 1-2. I can guide you through all of it."
+> **Day 1-2: Connect your email** (30 min)
+> This is the magic step. Once AI can read your email, it can actually SEE your business.
+>
+> **Day 3-5: Let AI observe and report**
+> Don't do anything. Let AI read 2 weeks of your emails. Then ask it:
+> 'What patterns do you see? What am I spending time on?'
+>
+> **Day 5-7: AI recommends automations**
+> Based on what it observed, AI will suggest things like:
+> - 'You answered 23 emails about delivery times. Want me to draft a template?'
+> - 'You have 5 vendors you email every week. Want me to track those relationships?'
+> - 'You got 12 customer complaints about the same issue. Want me to flag those automatically?'
+>
+> **You pick which ones to try.** AI suggests, you decide."
+
+### The Control You Have
+
+Emphasize this — it's important for trust:
+
+> "You decide how much access your AI gets:
+>
+> **Read-only access:** AI can see your emails but can't send anything. Safe for observing.
+>
+> **Draft access:** AI can write emails but they sit in Drafts until you approve. Safe for trying things.
+>
+> **Full access:** AI can send emails on your behalf. Only after you trust it.
+>
+> Start with read-only. Expand access as you build trust. You're always in control."
 
 ---
 
