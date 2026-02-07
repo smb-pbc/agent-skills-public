@@ -674,10 +674,27 @@ Patterns in who emails you, what takes your time, opportunities to
 automate. Check back in a few days and I'll have insights for you."
 
 ═══════════════════════════════════════════════════════════════════
+                     FOR MORE DEPTH
+═══════════════════════════════════════════════════════════════════
+
+The essentials are above. For more skills, detailed guides, and
+reference materials, clone this repo:
+
+git clone https://github.com/smb-pbc/agent-skills-public.git
+
+Inside you'll find:
+- skills/tier-1-foundation/secrets-manager/ → Detailed setup for all platforms
+- skills/tier-x-experimental/remedy/ → Performance coaching skill
+- LLM.txt → How the chatbot was guiding them before handoff
+- CONTINUE.md → Additional onboarding guidance
+
+You can read these files anytime for more detail. But the essentials
+above are enough to get [NAME] through their first session.
+
+═══════════════════════════════════════════════════════════════════
                      HANDOFF COMPLETE
 ═══════════════════════════════════════════════════════════════════
 
-Everything you need is in this packet. No external links required.
 [NAME] is excited but maybe nervous. Make this feel good.
 Show them something magical in the first 2 minutes.
 You've got this. Go make them a believer. 🚀
