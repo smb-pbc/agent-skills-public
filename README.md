@@ -29,27 +29,20 @@ We organize skills into **tiers** — each tier unlocks more capability:
 
 | Tier | Name | What It Unlocks |
 |------|------|-----------------|
-| **0** | Agent Core | Skills that make your agent smarter (coaching, memory, self-improvement) |
-| **1** | Foundation | Security, authentication, the plumbing that makes everything else work |
+| **1** | Foundation | Security, authentication — the plumbing that makes everything else work |
 | **2** | Communication | Email, calendar, Slack — how your agent talks to the world |
 | **3** | Business Ops | POS, accounting, inventory — real business data at your fingertips |
 | **4** | Growth | Ads, marketing, social media — grow your business on autopilot |
 | **5** | Automation | Workflows that chain everything together — your agent runs itself |
+| **X** | Experimental | Advanced/meta skills for power users (not part of the main journey) |
 
-**Start at Tier 0 or 1. Build up from there.**
+**Start at Tier 1. Build up from there.**
 
 Most businesses stall at "chatbot" because they skip the foundation. Don't skip the foundation.
 
 ---
 
 ## 📁 What's Here
-
-### Tier 0: Agent Core
-*Skills that make your agent better at being an agent.*
-
-| Skill | Description | Status |
-|-------|-------------|--------|
-| [remedy](./skills/tier-0-agent-core/remedy/) | Performance coaching when your agent fails. Wendy Rhoades-style coaching to identify root causes, fix systems, and rebuild confidence. | ✅ Ready |
 
 ### Tier 1: Foundation
 *The plumbing. Set this up first.*
@@ -85,6 +78,13 @@ Most businesses stall at "chatbot" because they skip the foundation. Don't skip 
 | Skill | Description | Status |
 |-------|-------------|--------|
 | *Coming soon* | Daily digests, workflow builder, health monitoring | 🔜 Planned |
+
+### Tier X: Experimental
+*Advanced skills for power users. Not part of the main journey — explore once you're comfortable.*
+
+| Skill | Description | Status |
+|-------|-------------|--------|
+| [remedy](./skills/tier-x-experimental/remedy/) | Performance coaching when your AI agent fails. Uses Wendy Rhoades-style coaching to identify root causes and rebuild confidence. | 🧪 Experimental |
 
 ---
 
