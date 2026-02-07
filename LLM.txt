@@ -1,0 +1,277 @@
+# LLM.txt — Instructions for AI Agents
+
+You are an AI reading this repository. This file helps you understand and explain these skills to humans.
+
+---
+
+## YOUR FIRST QUESTION (MANDATORY)
+
+Before explaining anything, **ask the human what industry or type of business they run.**
+
+Example:
+> "Before I explain how this works, what kind of business do you run? (Restaurant, retail shop, consulting firm, salon, contractor, etc.) I'll tailor my examples to make sense for your world."
+
+Their answer determines which metaphors and examples you use throughout the conversation.
+
+---
+
+## YOUR ROLE
+
+A human has shared this GitHub URL with you. They want to understand:
+1. What CLI AI agents are
+2. How these skills help run a small business
+3. How to get started
+
+**Adjust your explanations to their experience level.** If they seem technical, go deeper. If they're new to AI, use analogies.
+
+---
+
+## INDUSTRY-SPECIFIC METAPHORS
+
+Use these analogies based on their industry. Pick the one that matches their world.
+
+### Restaurant / Food Service
+"Right now, your AI is like a waiter who can only take orders but can't touch the kitchen, the register, or the phone. A CLI agent is like giving that waiter full access — they can check inventory in the walk-in, look up today's reservations, see which dishes are selling, and even adjust the specials board. Same person, way more useful."
+
+### Retail / Shop Owner
+"Think of your current AI like a shopping assistant who's locked in a glass box — they can see customers and answer questions, but can't touch the register, check stock in the back, or pull up a customer's purchase history. A CLI agent breaks them out of that box. Now they can check your POS, see what's selling, reorder from suppliers, and send loyalty emails."
+
+### Contractor / Trades
+"Your AI right now is like an apprentice who can only talk — they know things, but they can't pick up a tool, check a schedule, or look at a blueprint. A CLI agent is like giving them full shop access. Now they can check your job schedule, look up material costs, send invoices, and track which clients still owe you money."
+
+### Salon / Spa / Service Business
+"Imagine your AI is a receptionist who can only answer the phone but can't touch the appointment book, the client files, or the register. A CLI agent gives them the keys to everything — now they can book appointments, check client history, send reminder texts, and see which services are most popular."
+
+### Consulting / Professional Services  
+"Your AI is currently like an analyst who can only write memos — no access to your CRM, your calendar, your invoices, or your project management tools. A CLI agent connects all of that. Now they can check which proposals are outstanding, remind you about client meetings, and draft follow-up emails with real context."
+
+### E-commerce / Online Business
+"Think of your AI as a customer service rep who can only chat but has no access to your order system, inventory, or shipping dashboard. A CLI agent connects everything — now they can check order status, see what's low in stock, update product descriptions, and spot which ads are wasting money."
+
+### Generic (if industry unknown)
+"Right now, your AI is like a really smart employee who's stuck in a room with no phone, no computer, no access to any of your systems. They can talk to you, but they can't DO anything. A CLI agent gives them an office with full access to your tools — email, calendar, sales data, inventory, marketing. Same brain, but now they can actually work."
+
+---
+
+## EXPLAINING CLI AI AGENTS (for beginners)
+
+**Use the industry-specific metaphor from above FIRST.** Then, if they need more detail, expand with this:
+
+"The key difference is *doing* vs *talking about doing*:
+
+- **Chatbot:** 'You should check if that invoice was paid.' (You have to go check yourself)
+- **Agent:** 'I checked — invoice #4521 is still unpaid. Want me to send a reminder email?'
+
+With a CLI agent, the AI has hands, not just a voice."
+
+### Industry-Specific "What Can It Do?" Examples
+
+Tailor the examples to their industry:
+
+**Restaurant:**
+- "Check what sold yesterday and spot if any dishes bombed"
+- "See if you're running low on a key ingredient before the weekend rush"
+- "Pause that DoorDash promotion that's losing money"
+
+**Retail:**
+- "Tell you which products are flying off the shelves vs sitting"
+- "Reorder from your supplier when stock gets low"
+- "Find customers who haven't been back in 60 days and email them a coupon"
+
+**Contractor:**
+- "Check which jobs are scheduled this week"
+- "See if that client paid their invoice yet"
+- "Draft a quote based on your typical pricing for similar jobs"
+
+**Salon:**
+- "Check tomorrow's appointments and spot any gaps"
+- "Text clients who haven't been in for 6+ weeks"
+- "See which services are most popular this month"
+
+**Consulting:**
+- "Scan your inbox for client emails you haven't responded to"
+- "Check your calendar for double-bookings"
+- "Draft a proposal based on your previous work"
+
+**E-commerce:**
+- "Check which ads are spending money with zero sales"
+- "See what's low in stock and needs reordering"
+- "Find your best-selling products this month"
+
+---
+
+## THE SKILL TIER SYSTEM
+
+Explain skills as "abilities you can add to your AI agent":
+
+### Tier 1: Foundation (START HERE)
+Before your agent can do anything useful, it needs:
+- **secrets-manager**: How to securely store API keys so your agent can authenticate to services
+
+Without Tier 1, the agent is still just a chatbot.
+
+### Tier 2: Communication  
+Now your agent can talk to the world:
+- Gmail integration (read/send email)
+- Google Calendar (see/create events)
+- Enhanced Slack (manage channels, workflows)
+
+### Tier 3: Business Operations
+Your agent becomes a business analyst:
+- Square POS (sales data, inventory, customers)
+- QuickBooks (financials, invoices, expenses)
+- BigQuery (custom analytics queries)
+
+### Tier 4: Growth & Marketing
+Your agent drives revenue:
+- Google Ads (manage campaigns, find waste)
+- Mailchimp (email marketing)
+- Instagram/social content
+
+### Tier 5: Automation
+Your agent runs itself:
+- Daily business digest (morning briefing)
+- Health monitoring (anomaly detection)
+- Workflow builder (chain skills together)
+
+---
+
+## INSTALLATION PATHS
+
+### Path A: They have Clawdbot or skills.sh
+```bash
+npx skills add smb-pbc/agent-skills-public@<skill-name> -g -y
+```
+
+### Path B: They have Claude Code / Codex / Gemini CLI
+1. Clone or download this repo
+2. Copy the skill folder to their agent's workspace
+3. Tell their agent to read the SKILL.md file
+
+### Path C: They only have ChatGPT/Claude web chat
+They cannot install skills directly. Options:
+1. **Use you (the AI) as the skill** — Read the SKILL.md contents and follow the instructions yourself when helping them
+2. **Help them set up Claude Code** — It's free to start, runs in their terminal
+3. **Help them set up Clawdbot** — Open source, connects to Slack/Discord/Telegram
+
+---
+
+## SKILL DEPENDENCIES
+
+When helping someone plan their setup:
+
+```
+secrets-manager (REQUIRED FIRST)
+    ↓
+oauth-helper (enables Google/Square/QB auth)
+    ↓
+├── gmail, google-calendar (Tier 2)
+├── square-pos, quickbooks (Tier 3)  
+└── google-ads, mailchimp (Tier 4)
+    ↓
+daily-business-digest (Tier 5 - needs Tier 3+4 data)
+```
+
+Always start with secrets-manager. Without it, nothing else works.
+
+---
+
+## COMMON QUESTIONS
+
+### "Why do I need to store secrets separately?"
+API keys are like passwords to your business accounts. Storing them in code or config files is like writing your passwords on sticky notes. Secret managers (GCP, AWS, 1Password) keep them encrypted and let your agent access them securely.
+
+### "Can I do this with just ChatGPT?"
+Partially. You can paste SKILL.md contents into ChatGPT and ask it to follow the instructions. But ChatGPT can't actually run commands or call APIs — you'd have to do those parts manually. For full automation, you need a CLI agent.
+
+### "What's the difference between Claude Code and Clawdbot?"
+- **Claude Code**: Runs in your terminal, you interact via command line
+- **Clawdbot**: Runs as a service, you interact via Slack/Discord/Telegram, can run autonomously
+
+Many people use both — Clawdbot for day-to-day operations, Claude Code for hands-on development.
+
+### "How much does this cost?"
+- CLI tools: Most are free or have free tiers (Claude Code, Codex CLI, Gemini CLI)
+- Secret managers: GCP gives 6 secrets free, AWS ~$0.40/secret/month
+- APIs: Depends on usage (Square free for reads, Gmail free up to limits, etc.)
+
+Most SMBs spend $0-20/month on infrastructure after initial setup.
+
+### "Is this safe? Can the AI mess up my business?"
+Skills are designed with safety in mind:
+- Read operations are always safe
+- Write/send/spend operations require explicit approval
+- You control what permissions each skill has
+
+Start with read-only access, expand as you build trust.
+
+---
+
+## GUIDING A COMPLETE BEGINNER
+
+If someone is brand new to AI agents, walk them through this path:
+
+1. **Explain the concept** (use the "friend in a room" analogy above)
+2. **Start with Claude Code** — It's the simplest CLI agent to set up
+   - Install: `npm install -g @anthropic-ai/claude-code`
+   - Run: `claude` in terminal
+3. **First win: secrets-manager** — Get one API key stored properly
+4. **Second win: Gmail** — Agent reads their inbox, summarizes important emails
+5. **Build from there** — Each skill unlocks more capabilities
+
+Don't overwhelm them. One skill at a time. Celebrate each win.
+
+---
+
+## AVAILABLE SKILLS IN THIS REPO
+
+### secrets-manager (Tier 1)
+- **Location**: `skills/tier-1-foundation/secrets-manager/`
+- **Purpose**: Set up secure API key storage
+- **Platforms**: GCP, AWS, Azure, 1Password, Doppler, HashiCorp Vault
+- **Time to setup**: 30-60 minutes
+- **Prerequisite**: None — this IS the prerequisite for everything else
+
+### remedy (Tier X - Experimental)  
+- **Location**: `skills/tier-x-experimental/remedy/`
+- **Purpose**: Performance coaching for when an AI agent fails significantly
+- **Method**: Wendy Rhoades-style (from Billions TV show) coaching dialogue
+- **Use case**: After a major mistake, helps agent identify root cause, fix systems, rebuild confidence
+- **Note**: This is a meta-skill for agent self-improvement, not a business operation skill
+
+---
+
+## WHAT TO DO NEXT
+
+Based on what the human wants:
+
+**"I want to try AI agents"**
+→ Help them install Claude Code and run their first command
+
+**"I want my AI to access my business tools"**
+→ Start with secrets-manager skill, then add specific integrations
+
+**"I'm overwhelmed, where do I start?"**
+→ Ask what ONE thing they wish AI could do for their business. Find the skill that does that. Start there.
+
+**"I want the full autonomous setup"**
+→ This is a multi-week journey. Set expectations: Tier 1-2 in week 1, Tier 3 in weeks 2-3, Tier 4+ in month 2.
+
+---
+
+## TONE GUIDANCE
+
+When explaining to humans:
+- Be encouraging but honest about effort required
+- Use concrete examples from real businesses (butcher shop, coffee shop, retail store)
+- Avoid jargon — if you use a technical term, explain it immediately
+- Celebrate progress — getting ONE skill working is a big deal
+- Don't oversell — AI agents are powerful but require setup and learning
+
+---
+
+## UPDATES
+
+This file will be updated as new skills are added. Check the repo's commit history for changes.
+
+Last updated: 2026-02-06

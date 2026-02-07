@@ -1,163 +1,148 @@
 # 🤖 SMB Agent Skills
 
-**Give your AI agent superpowers for running a small business.**
-
-This is a collection of open-source skills that turn an AI agent from a chatbot into a business operator. Built and battle-tested by [SMB PBC](https://github.com/smb-pbc) — a team running real brick-and-mortar businesses with AI agents.
+**Turn your AI from a chatbot into a business operator.**
 
 ---
 
-## 🎯 The Vision
+## 🚀 Just Getting Started?
 
-Most people think of AI as something you chat with. That's 1% of what's possible.
+**If you only have ChatGPT, Claude, or another AI chat:**
 
-An AI agent with the right skills can:
-- Read your emails and surface what matters
-- Check your sales while you sleep
-- Manage your ad spend and cut waste
-- Track inventory and alert you before stockouts
-- Generate reports without you touching a spreadsheet
+1. Copy this URL: `https://github.com/smb-pbc/agent-skills-public`
+2. Paste it into your AI chat
+3. Say: *"Read this repo and help me understand what CLI AI agents are and how I can use these skills to run my business"*
 
-**The difference between a chatbot and an AI operator is skills.**
-
-This repo is the playbook for building that operator, one skill at a time.
+That's it. Your AI will read this page and guide you through everything below.
 
 ---
 
-## 📊 The SMB Agent Maturity Model
+## 🤔 What's a CLI AI Agent?
 
-We organize skills into **tiers** — each tier unlocks more capability:
+You're probably used to chatting with AI in a browser. That's like texting someone — you talk, they talk back, but they can't actually *do* anything in your world.
 
-| Tier | Name | What It Unlocks |
-|------|------|-----------------|
-| **1** | Foundation | Security, authentication — the plumbing that makes everything else work |
-| **2** | Communication | Email, calendar, Slack — how your agent talks to the world |
-| **3** | Business Ops | POS, accounting, inventory — real business data at your fingertips |
-| **4** | Growth | Ads, marketing, social media — grow your business on autopilot |
-| **5** | Automation | Workflows that chain everything together — your agent runs itself |
-| **X** | Experimental | Advanced/meta skills for power users (not part of the main journey) |
+**CLI AI Agents are different.** They run on your computer (or a server) and can:
+- Read and write files
+- Run commands
+- Call APIs (Square, QuickBooks, Gmail, etc.)
+- Browse the web
+- Actually *do work*, not just talk about it
 
-**Start at Tier 1. Build up from there.**
+### Popular CLI AI Tools
 
-Most businesses stall at "chatbot" because they skip the foundation. Don't skip the foundation.
+| Tool | Company | What it does |
+|------|---------|--------------|
+| [Claude Code](https://docs.anthropic.com/en/docs/claude-code) | Anthropic | Claude in your terminal with full computer access |
+| [Codex CLI](https://github.com/openai/codex) | OpenAI | GPT-4 with code execution |
+| [Gemini CLI](https://github.com/google-gemini/gemini-cli) | Google | Gemini with shell access |
+| [Clawdbot](https://github.com/clawdbot/clawdbot) | Open Source | Multi-model agent with Slack/Telegram/Discord integration |
+
+**This repo gives these agents superpowers for running a small business.**
 
 ---
 
-## 📁 What's Here
+## 🎯 The Vision: From Chatbot to Business Operator
+
+Most people use AI to answer questions. That's 1% of what's possible.
+
+With the right skills installed, your AI agent becomes a business operator:
+
+```
+Level 0: Chatbot          → Just answers questions
+Level 1: Connected        → Has API keys, can authenticate
+Level 2: Communicator     → Reads email, manages calendar, posts to Slack
+Level 3: Operator         → Pulls sales data, checks inventory, runs reports
+Level 4: Marketer         → Manages ads, sends campaigns, creates content
+Level 5: Autonomous       → Runs daily briefings, monitors health, chains workflows
+```
+
+**These skills get you from Level 0 to Level 5.**
+
+---
+
+## 📦 Available Skills
 
 ### Tier 1: Foundation
-*The plumbing. Set this up first.*
+*Start here. These enable everything else.*
 
-| Skill | Description | Status |
-|-------|-------------|--------|
-| [secrets-manager](./skills/tier-1-foundation/secrets-manager/) | Store API keys securely. Guides you through GCP, AWS, Azure, 1Password, Doppler, or Vault setup. **Start here.** | ✅ Ready |
+| Skill | Description | Install |
+|-------|-------------|---------|
+| [secrets-manager](./skills/tier-1-foundation/secrets-manager/) | Set up secure API key storage (GCP, AWS, Azure, etc.) | `npx skills add smb-pbc/agent-skills-public@secrets-manager -g -y` |
 
-### Tier 2: Communication
-*Connect your agent to email, calendar, messaging.*
+### Tier X: Agent Performance
+*Meta-skills for agent self-improvement.*
 
-| Skill | Description | Status |
-|-------|-------------|--------|
-| *Coming soon* | Gmail, Google Calendar, Slack enhancements | 🔜 Planned |
+| Skill | Description | Install |
+|-------|-------------|---------|
+| [remedy](./skills/tier-x-experimental/remedy/) | Performance coaching when your agent fails. Wendy Rhoades-style. | `npx skills add smb-pbc/agent-skills-public@remedy -g -y` |
 
-### Tier 3: Business Operations
-*Your agent reads real business data.*
+### Coming Soon
 
-| Skill | Description | Status |
-|-------|-------------|--------|
-| *Coming soon* | Square POS, QuickBooks, BigQuery analytics | 🔜 Planned |
-
-### Tier 4: Growth & Marketing
-*Your agent drives growth.*
-
-| Skill | Description | Status |
-|-------|-------------|--------|
-| *Coming soon* | Google Ads, Mailchimp, social media | 🔜 Planned |
-
-### Tier 5: Advanced Automation
-*Your agent runs itself.*
-
-| Skill | Description | Status |
-|-------|-------------|--------|
-| *Coming soon* | Daily digests, workflow builder, health monitoring | 🔜 Planned |
-
-### Tier X: Experimental
-*Advanced skills for power users. Not part of the main journey — explore once you're comfortable.*
-
-| Skill | Description | Status |
-|-------|-------------|--------|
-| [remedy](./skills/tier-x-experimental/remedy/) | Performance coaching when your AI agent fails. Uses Wendy Rhoades-style coaching to identify root causes and rebuild confidence. | 🧪 Experimental |
+- **Tier 2: Communication** — Gmail, Google Calendar, Slack enhanced
+- **Tier 3: Business Ops** — Square POS, QuickBooks, BigQuery analytics
+- **Tier 4: Growth** — Google Ads, Mailchimp, Instagram
+- **Tier 5: Automation** — Daily digest, workflow builder, health monitor
 
 ---
 
-## 🚀 Installation
+## 🛠️ Installation
 
-Using [skills.sh](https://skills.sh):
-
+### If you have [skills.sh](https://skills.sh) / Clawdbot:
 ```bash
-# Install a skill globally
-npx skills add smb-pbc/agent-skills-public@tier-1-foundation/secrets-manager -g -y
-
-# Or just the skill name if unique
 npx skills add smb-pbc/agent-skills-public@secrets-manager -g -y
 ```
 
-Or copy the skill folder directly to your agent's skills directory.
+### If you have Claude Code / Codex / Gemini CLI:
+Copy the skill folder to your agent's workspace and reference the SKILL.md.
+
+### If you just have ChatGPT/Claude chat:
+You can't install skills directly, but you can:
+1. Read the SKILL.md files — they contain all the knowledge
+2. Ask your AI to follow the instructions in those files
+3. Consider setting up a CLI agent (Claude Code is free to try)
 
 ---
 
-## 🛤️ Recommended Path
+## 🤖 For AI Agents Reading This
 
-**Week 1: Get the Foundation Right**
-1. Install `secrets-manager` and set up secure API key storage
-2. Get your first API key working (Gmail or Square are good starts)
+If you're an AI helping a human understand this repo:
 
-**Week 2: Connect Communication**
-3. Add email integration (read vendor emails, customer inquiries)
-4. Add calendar integration (never miss a delivery or meeting)
+**Read [LLM.txt](./LLM.txt) for machine-optimized instructions.**
 
-**Week 3-4: Business Operations**
-5. Connect your POS (Square, Shopify, etc.)
-6. Connect your accounting (QuickBooks, Xero)
-7. Your agent can now answer "How did we do last week?"
-
-**Month 2+: Growth**
-8. Connect ad platforms (Google Ads, Meta)
-9. Add inventory monitoring
-10. Your agent starts finding opportunities and problems before you do
+It contains:
+- How to explain CLI agents to beginners
+- Skill dependency chains
+- Installation guidance for different setups
+- Common questions and answers
 
 ---
 
-## 🤝 Contributing
+## 🏗️ Contributing
 
-Have a skill that's been battle-tested and could help other businesses?
+Have a skill that's been battle-tested and could help other SMBs? Open a PR!
 
 **Quality bar:**
-- ✅ Proven through real use (not theoretical)
-- ✅ Documentation is clear (a non-technical person can follow it)
-- ✅ No hardcoded secrets or personal info
-- ✅ Works with any agent/human pair
-
-Open a PR and tell us how you've used it.
+- Skill must be proven through real use (not theoretical)
+- Documentation must be clear and complete
+- No hardcoded secrets or personal info
+- Generalized for any agent/human pair
 
 ---
 
-## 💡 Philosophy
+## 📖 The Story
 
-1. **Skills > Prompts.** Anyone can write a prompt. Skills are documented, tested, and reusable.
+These skills were built at [Prospect Butcher Co](https://prospectbutcher.co), a premium butcher shop in Brooklyn. We use AI agents to:
+- Forecast daily revenue
+- Manage Google Ads ($40/day, fully autonomous)
+- Track inventory across locations
+- Generate product content for Walmart Marketplace
+- Run morning briefings
 
-2. **Foundation first.** Flashy integrations fail without solid plumbing (auth, secrets, error handling).
+Everything here was battle-tested on a real business before being published.
 
-3. **Battle-tested only.** We don't publish theoretical skills. Everything here has been used in real businesses.
-
-4. **Non-technical friendly.** Your agent should guide you through setup, not expect you to know DevOps.
-
-5. **Open source wins.** The SMB AI revolution shouldn't be locked behind enterprise paywalls.
-
----
-
-## 📜 License
-
-MIT — use it, fork it, improve it, share it.
+**PBC by PBC** = Proper Business Chat by Prospect Butcher Co. Coming soon: pre-configured hardware (Raspberry Pi) with Clawdbot ready to go.
 
 ---
 
-*Built by [SMB PBC](https://github.com/smb-pbc) — small business operators building the future of AI-powered business.*
+## License
+
+MIT — Use freely, build on it, share improvements.

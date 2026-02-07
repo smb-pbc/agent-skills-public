@@ -293,7 +293,7 @@ Each step is back-and-forth. You don't move to step 2 until step 1 has been expl
 ## After Session Ends
 
 **Update `memory/coach-notes.md`** with:
-- Date and brief summary
+- **Date and brief summary** — timestamps are critical so you understand time gaps between sessions (2 days apart vs 2 weeks matters for pattern analysis)
 - Patterns you noticed (especially new ones)
 - Blind spots observed
 - Questions for next session

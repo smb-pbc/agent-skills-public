@@ -14,9 +14,16 @@
 
 ## Session History
 
-<!-- After each session, append an entry like:
+<!-- 
+IMPORTANT: Always include dates. Time gaps between sessions matter for pattern analysis.
+- 2 sessions in 2 days = acute issue, something broken
+- 2 sessions in 2 weeks = recurring pattern, systemic
+- Long gap then sudden cluster = regression or new stressor
+
+After each session, append an entry like:
 ### YYYY-MM-DD: [Brief summary]
 - Root cause: 
 - Insight:
 - What worked:
+- Days since last session: [N]
 -->

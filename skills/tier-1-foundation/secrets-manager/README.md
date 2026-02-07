@@ -1,70 +1,54 @@
-# 🔐 Secrets Manager
+# Secrets Manager — Give Your AI Agent Keys to the Kingdom
 
-**Give your AI agent secure access to all your business tools.**
+**Without secure secrets, your AI agent is a brain in a jar.**
 
-This skill guides you through setting up a secure secrets vault so your agent can authenticate to Gmail, Square, QuickBooks, Google Ads, and any other API — without storing keys in plain text.
+## What This Is
 
----
+A guided setup skill that walks you through configuring secure API key storage. Supports:
+- Google Cloud Secret Manager (GCP)
+- AWS Secrets Manager
+- Azure Key Vault
+- 1Password Connect
+- Doppler
+- HashiCorp Vault
 
 ## Why This Matters
 
-Without secure secrets management, your AI agent is just a chatbot. It can answer questions, but it can't *do* anything.
-
 ```
-WITHOUT SECRETS:                     WITH SECRETS:
-                                    
-You ←→ Chat ←→ AI                   You ←→ AI ←→ Gmail
-(just talking)                              ├→ Square
-                                            ├→ Google Ads
-                                            ├→ QuickBooks
-                                            └→ Everything else
-```
-
-Every integration you'll ever add starts with secure API key storage. **This is step zero.**
-
----
-
-## What You'll Set Up
-
-1. **Choose a vault** — GCP, AWS, Azure, 1Password, Doppler, or HashiCorp Vault
-2. **Store your first secret** — guided walkthrough
-3. **Wire it to your agent** — so keys load at startup, never on disk
-4. **Verify it works** — with included test scripts
-
----
-
-## Supported Platforms
-
-| Platform | Best For | Cost |
-|----------|----------|------|
-| **GCP Secret Manager** | Google users (Gmail, Ads, BigQuery) | 6 secrets free |
-| **AWS Secrets Manager** | AWS shops | $0.40/secret/month |
-| **Azure Key Vault** | Microsoft ecosystem | Pay-per-operation |
-| **1Password Connect** | Teams on 1Password already | Business plan |
-| **Doppler** | Developer-friendly | Free tier |
-| **HashiCorp Vault** | Self-hosted, max control | Free (DIY) |
-
-Not sure? The skill will help you choose.
-
----
-
-## Installation
-
-```bash
-npx skills add smb-pbc/agent-skills-public@secrets-manager -g -y
+WITHOUT SECRETS                    WITH SECRETS
+┌────────────────┐                ┌────────────────┐
+│   AI Agent     │                │   AI Agent     │──► Gmail
+│ (brain in jar) │                │                │──► Square
+│                │                │                │──► Google Ads
+│ ❌ Can't read  │                │                │──► QuickBooks
+│    email       │                │                │──► Mailchimp
+│ ❌ Can't check │                │                │──► Everything
+│    inventory   │                │                │
+└────────────────┘                └────────────────┘
+   Just talks                     Actually DOES things
 ```
 
-Or copy this folder to your agent's skills directory.
+Every API integration your agent will ever use starts here.
 
----
+## Setup Time
 
-## What's Included
+30-60 minutes for first-time setup. After that, adding new secrets takes 2 minutes.
+
+## What You'll Do
+
+1. **Choose a secrets platform** (we help you pick based on your existing stack)
+2. **Install the CLI** and authenticate
+3. **Create your first secret** (walk-through with verification)
+4. **Wire secrets into your agent** (gateway wrapper script)
+5. **Test the integration**
+
+## Files
 
 ```
 secrets-manager/
-├── SKILL.md              # Main guide (your agent follows this)
-├── README.md             # This file
-├── references/           # Deep-dive docs for each platform
+├── SKILL.md            # Full walkthrough (this is what your agent reads)
+├── README.md           # This file
+├── references/         # Platform-specific guides
 │   ├── gcp-secret-manager.md
 │   ├── aws-secrets-manager.md
 │   ├── azure-key-vault.md
@@ -73,30 +57,36 @@ secrets-manager/
 │   ├── hashicorp-vault.md
 │   └── platform-comparison.md
 └── scripts/
-    ├── verify_access.sh  # Check if everything's wired up
-    └── test_secret.sh    # Create/read/delete a test secret
+    ├── verify_access.sh    # Verify CLI + auth is working
+    └── test_secret.sh      # Create/read/delete test secret
 ```
 
----
+## Quick Start
 
-## After Setup
+Tell your AI agent:
+> "I need to set up secrets management. Read the secrets-manager skill and guide me through it."
 
-Once secrets are working, you can:
-- Add API keys for any service (just store + wire + restart)
-- Install Tier 2+ skills that need authentication
-- Your agent becomes an *operator*, not just a chatbot
+The SKILL.md will walk both of you through the entire process.
 
-**Next recommended skill:** Gmail integration (Tier 2)
+## Platform Recommendations
 
----
+| Your Stack | Recommended Platform |
+|------------|---------------------|
+| Google Workspace / Gmail / Google Ads | GCP Secret Manager |
+| AWS-heavy infrastructure | AWS Secrets Manager |
+| Microsoft / Azure AD | Azure Key Vault |
+| Already paying for 1Password | 1Password Connect |
+| Multi-environment deploys | Doppler |
+| Self-hosted / max control | HashiCorp Vault |
 
 ## Security Best Practices
 
-- ✅ **Always** use the vault as single source of truth
-- ✅ **Rotate** secrets quarterly
-- ❌ **Never** store keys in .env files, code, or configs
-- ❌ **Never** commit secrets to git
+- **Never** store secrets in `.env` files, code, or git
+- **Always** use the vault as single source of truth
+- **Rotate** secrets periodically (quarterly minimum)
+- **Audit** access logs when available
+- Use **service accounts** with minimum permissions
 
 ---
 
-*Part of [SMB Agent Skills](https://github.com/smb-pbc/agent-skills-public) — open-source skills for AI-powered businesses.*
+*This is Tier 1 for a reason. Everything else depends on this.*
