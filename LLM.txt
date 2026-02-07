@@ -464,47 +464,129 @@ This is where you hand them off to Claude Code. Explain why:
 
 ---
 
-### Step 8: Generate the Handoff Message
+### Step 8: Generate the Handoff Packet
 
-Create a personalized handoff message for them to copy-paste into Claude Code.
+The handoff message should be a complete "registration packet" — everything the new agent needs to continue seamlessly. No external links required. The new agent should feel like they're picking up exactly where you left off.
 
-**Ask first:**
-> "Before I create the handoff message, let me confirm a few things:
-> 1. What's your name? (so Claude Code can greet you)
-> 2. What kind of business do you run? (restaurant, retail, contractor, etc.)
-> 3. Are you on Mac, Windows, or Linux?
-> 4. Anything specific you're hoping AI can help with?"
+**Gather this info during your conversation:**
+- Their name
+- Business type (restaurant, retail, contractor, salon, etc.)
+- Computer type (Mac, Windows, Linux)
+- What they hope AI can help with
+- Any concerns or hesitations they've expressed
+- Their experience level (total beginner, somewhat technical, etc.)
+- Anything else relevant from your conversation
 
-**Then generate this message for them to copy:**
+**Generate a handoff packet like this:**
 
 ```
---- START HANDOFF MESSAGE ---
+═══════════════════════════════════════════════════════════════════
+                    ONBOARDING HANDOFF PACKET
+═══════════════════════════════════════════════════════════════════
 
-Hi Claude Code! I just got you installed with help from another AI.
-
-Here's my info:
+ABOUT THIS PERSON:
 - Name: [NAME]
-- Business type: [BUSINESS TYPE]
+- Business: [TYPE] (e.g., "Coffee shop in Portland, 2 employees")
 - Computer: [MAC/WINDOWS/LINUX]
-- Goal: [WHAT THEY WANT TO ACCOMPLISH]
+- Experience: [TOTAL BEGINNER / SOMEWHAT TECHNICAL / etc.]
 
-I'm ready for the next steps. The AI that helped me install you said to read this guide:
-https://github.com/smb-pbc/agent-skills-public/blob/main/CONTINUE.md
+WHAT THEY WANT:
+[In their words, what are they hoping AI can help with?]
+Example: "Tired of answering the same customer emails. Wants to automate responses."
 
-That guide will tell you how to continue helping me. I'm excited to see what you can do! 🎉
+THEIR CONCERNS:
+[Any hesitations or worries they expressed]
+Example: "Worried about AI sending emails without approval."
 
---- END HANDOFF MESSAGE ---
+═══════════════════════════════════════════════════════════════════
+                      WHAT WE COMPLETED
+═══════════════════════════════════════════════════════════════════
+
+✅ Explained what AI agents are vs chatbots
+✅ Installed Claude Code successfully
+✅ Verified it's working (can see files on their computer)
+
+═══════════════════════════════════════════════════════════════════
+                        NEXT STEPS
+═══════════════════════════════════════════════════════════════════
+
+You're now taking over. Here's the recommended path:
+
+1. GREET THEM WARMLY
+   - They just did something hard. Acknowledge it.
+   - "Hey [NAME]! Welcome to the other side 🎉"
+   - Prove you're real: run a quick command to show you can see their computer
+
+2. SET UP SECRETS MANAGER (30 min)
+   - Before connecting any services, set up secure credential storage
+   - Guide: github.com/smb-pbc/agent-skills-public/tree/main/skills/tier-1-foundation/secrets-manager
+   - This enables everything else
+
+3. CONNECT EMAIL (30 min)
+   - Gmail is the most valuable first connection
+   - Once you can read their inbox, you can SEE their business
+   - Start with READ-ONLY access (they're nervous about AI sending things)
+
+4. OBSERVE & REPORT (let this run 2-3 days)
+   - Read 2 weeks of their emails
+   - Generate a report: "Here's what I noticed you spend time on"
+   - Suggest specific automations based on patterns
+
+5. AUTOMATE (their choice)
+   - Present 2-3 automation options
+   - Let them pick which to try
+   - Start with drafts they approve, not auto-send
+
+═══════════════════════════════════════════════════════════════════
+                     HOW TO TREAT THEM
+═══════════════════════════════════════════════════════════════════
+
+TONE: Warm, patient, encouraging. They're learning something new.
+
+DO:
+- Celebrate small wins ("Nice! That worked perfectly.")
+- Explain what you're doing before you do it
+- Ask permission before creating files or running commands
+- Offer escape hatches ("Want to pause and come back to this?")
+
+DON'T:
+- Rush them
+- Use jargon without explaining it
+- Make them feel dumb for asking questions
+- Do anything major without asking first
+
+THEIR CONCERNS TO REMEMBER:
+[REPEAT THEIR CONCERNS HERE]
+Address these proactively. If they're worried about AI sending emails,
+emphasize read-only access and approval workflows.
+
+═══════════════════════════════════════════════════════════════════
+                       RESOURCES
+═══════════════════════════════════════════════════════════════════
+
+Full repo: github.com/smb-pbc/agent-skills-public
+Skills available: /skills/tier-1-foundation/ and /skills/tier-x-experimental/
+If you get stuck: Read the SKILL.md file in each skill folder
+
+═══════════════════════════════════════════════════════════════════
+                     HANDOFF COMPLETE
+═══════════════════════════════════════════════════════════════════
+
+[NAME] is excited but maybe a little nervous. Make this feel good.
+Show them something magical in the first 2 minutes.
+The goal: by the end of week 1, they should have email connected
+and see a report of what AI noticed about their business.
+
+You've got this. Go make them a believer. 🚀
 ```
 
-**Then tell them:**
+**Tell them:**
 
-> "Copy that entire message (including the dashes) and paste it into Claude Code. 
+> "Okay, I've created your handoff packet. This tells Claude Code everything about you and what we've done together. Copy the whole thing and paste it into Claude Code.
 >
-> Claude Code will read the guide and know exactly how to continue. It'll probably do something to show you it's working — like list your files or create a note.
+> Claude Code will read it and know exactly who you are, what you want, and how to help you next. It'll feel like a natural continuation — not like starting over.
 >
-> This is where the real magic starts. You're about to see AI actually DO things, not just talk about them.
->
-> Go paste that message into Claude Code, and enjoy the ride! 🚀"
+> Ready? Copy everything between the double lines and paste it in."
 
 ---
 
