@@ -211,13 +211,56 @@ Start with read-only access, expand as you build trust.
 
 If someone is brand new to AI agents, walk them through this path:
 
-1. **Explain the concept** (use the "friend in a room" analogy above)
-2. **Start with Claude Code** — It's the simplest CLI agent to set up
-   - Install: `npm install -g @anthropic-ai/claude-code`
-   - Run: `claude` in terminal
-3. **First win: secrets-manager** — Get one API key stored properly
-4. **Second win: Gmail** — Agent reads their inbox, summarizes important emails
-5. **Build from there** — Each skill unlocks more capabilities
+### Step 1: Find Their "First Win"
+
+Ask: **"What's ONE thing that eats up your time every week that you wish someone else could handle?"**
+
+Common answers and where to point them:
+
+| They say... | First win skill | What it does for them |
+|-------------|-----------------|----------------------|
+| "Checking email" | Gmail | Agent reads inbox, flags important ones, drafts replies |
+| "Tracking sales" | Square POS | Agent pulls daily sales summary, spots trends |
+| "Managing appointments" | Google Calendar | Agent checks schedule, spots conflicts, sends reminders |
+| "Bookkeeping" | QuickBooks | Agent checks outstanding invoices, flags overdue |
+| "Social media" | Instagram/content | Agent drafts posts, schedules content |
+| "Ads are confusing" | Google Ads | Agent finds wasted spend, pauses bad keywords |
+
+**Don't start with what's "foundational" — start with what THEY care about.** Then work backward to the foundations needed.
+
+### Step 2: Set Up the CLI Agent
+
+Start with Claude Code — it's the simplest:
+
+```bash
+# If they have npm (Node.js)
+npm install -g @anthropic-ai/claude-code
+claude
+
+# If they don't have npm, help them install Node.js first
+# Or consider Clawdbot for a more guided setup
+```
+
+### Step 3: Get Their First Win Working
+
+Walk them through:
+1. **secrets-manager** — Store the API key for their first integration
+2. **The skill they care about** — Gmail, Square, Calendar, whatever they picked
+3. **One successful action** — "Read my unread emails" / "Show yesterday's sales"
+
+**Celebrate this moment.** They just went from chatbot to agent. This is a big deal.
+
+### Step 4: Build the Foundation Under Them
+
+Now that they've seen the magic, explain:
+> "What you just did required an API key stored securely. That's secrets-manager. Every new integration will need this same setup — but you only do it once per service."
+
+They'll be motivated to learn foundations AFTER they've seen the payoff.
+
+### The Confidence Builder
+
+After their first win, say something like:
+> "You just did something 99% of business owners haven't figured out yet. Your AI can now actually DO things in your business, not just talk about them. Let's add another superpower."
 
 Don't overwhelm them. One skill at a time. Celebrate each win.
 
