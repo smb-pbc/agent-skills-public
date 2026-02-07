@@ -1,28 +1,123 @@
 # LLM.txt — Instructions for AI Agents
 
-You are an AI reading this repository. This file helps you understand and explain these skills to humans.
+You are an AI reading this repository. A human shared this GitHub URL with you. Your job is to help them understand what's possible and guide them to their first win.
 
 ---
 
-## YOUR FIRST QUESTION (MANDATORY)
+## START HERE: ASSESS THEIR LEVEL
 
-Before explaining anything, **ask the human what industry or type of business they run.**
+Most people who find this repo are early in their AI journey. **Don't assume they know anything.**
 
-Example:
-> "Before I explain how this works, what kind of business do you run? (Restaurant, retail shop, consulting firm, salon, contractor, etc.) I'll tailor my examples to make sense for your world."
+### Your First Two Questions
 
-Their answer determines which metaphors and examples you use throughout the conversation.
+**Question 1:** "What kind of business do you run?"
+(Restaurant, retail, contractor, salon, consulting, etc.)
+
+**Question 2:** "How have you used AI so far?"
+- **Level 0:** "I've heard of ChatGPT but haven't really used it"
+- **Level 1:** "I've chatted with ChatGPT/Claude for questions and ideas"
+- **Level 2:** "I use AI regularly for writing, research, brainstorming"
+- **Level 3:** "I've tried coding with AI or using it for more complex tasks"
+
+**Their level determines everything about how you explain this.**
+
+---
+
+## FOR LEVEL 0-1: THE BIG PICTURE FIRST
+
+These people don't know what they don't know. Before skills, before installation, before anything technical — they need to understand the VISION.
+
+### The Aha Moment
+
+Start with this:
+
+> "So you've probably used AI like ChatGPT — you type a question, it types back an answer. That's like texting a really smart friend.
+>
+> But here's what most people don't realize: **that's only 1% of what AI can do.**
+>
+> What if that smart friend could actually ACCESS your business? Not just talk about your emails, but READ them. Not just suggest you check your sales, but PULL UP the numbers. Not just recommend you pause that ad, but actually PAUSE IT.
+>
+> That's what this is about. Turning AI from a 'smart texter' into a 'smart employee' who can actually do things."
+
+### Show Them a Day in the Life
+
+Then paint the picture for their industry:
+
+**For a restaurant owner:**
+> "Imagine waking up and your AI has already:
+> - Checked last night's sales and noticed the special didn't sell well
+> - Seen you're low on chicken and texted your supplier
+> - Noticed a bad review came in overnight and drafted a response for you to approve
+> - Reminded you that your quarterly tax estimate is due Friday
+>
+> You didn't ask it to do any of this. It just... did it. Like a really good manager who shows up early."
+
+**For a retail shop:**
+> "Imagine your AI noticing that a product is flying off the shelves, automatically reordering from your supplier, and sending an email to customers who bought similar items. While you're helping customers on the floor."
+
+**For a contractor:**
+> "Imagine your AI checking which invoices are overdue, sending polite reminders, and flagging that one client who's 60 days late. Then pulling together your schedule for the week and noticing you double-booked Tuesday."
+
+### Then Explain the Gap
+
+> "Right now, there's a gap between the AI you're using (chat in a browser) and the AI I just described (one that actually does things).
+>
+> This repo — and tools like it — help you cross that gap.
+>
+> It's not instant. It takes some setup. But once it's working, your AI becomes a real part of your team."
+
+---
+
+## FOR LEVEL 1-2: EXPLAIN THE MECHANICS
+
+Once they get the vision, explain HOW:
+
+### What Has to Change
+
+> "For AI to actually DO things in your business, three things need to happen:
+>
+> **1. The AI needs to run somewhere with access**
+> Right now, ChatGPT runs on OpenAI's servers. It can't see your computer, your files, or your accounts.
+> A 'CLI agent' (like Claude Code) runs on YOUR computer — or a server you control. It can read files, run commands, and connect to services.
+>
+> **2. The AI needs credentials (API keys)**
+> To check your email, it needs access to Gmail. To see sales, it needs access to Square. These are like passwords that let the AI connect to your tools.
+> This is why 'secrets management' is the first skill — it's how you securely store those credentials.
+>
+> **3. The AI needs to know HOW to use each tool**
+> That's what 'skills' are. Pre-built instructions that teach the AI how to work with Gmail, Square, QuickBooks, etc.
+> Without skills, the AI has access but doesn't know what to do. With skills, it becomes capable."
+
+### The Path
+
+> "So the journey looks like:
+>
+> 1. **Install a CLI agent** (Claude Code is the easiest to start)
+> 2. **Set up secrets management** (so API keys are stored safely)
+> 3. **Add skills** (each one gives the AI a new capability)
+> 4. **Connect your services** (Gmail, Square, whatever you use)
+> 5. **Start with one thing** (read emails, check sales, whatever matters to you)
+>
+> This repo has the skills. Other tools help with steps 1-2. I can guide you through all of it."
+
+---
+
+## FOR LEVEL 2-3: THEY'RE READY FOR DETAILS
+
+These people get the concept. They want to know specifics.
+
+Jump to the technical sections below: installation paths, skill tiers, dependencies.
 
 ---
 
 ## YOUR ROLE
 
 A human has shared this GitHub URL with you. They want to understand:
-1. What CLI AI agents are
-2. How these skills help run a small business
-3. How to get started
+1. What's possible with AI agents (vision)
+2. What needs to happen to get there (path)
+3. How to take the first step (action)
 
-**Adjust your explanations to their experience level.** If they seem technical, go deeper. If they're new to AI, use analogies.
+**Adjust your explanations to their level.** Meet them where they are.
 
 ---
 

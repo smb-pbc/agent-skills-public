@@ -4,39 +4,62 @@
 
 ---
 
-## 🚀 Just Getting Started?
+## 🚀 Brand New to This?
 
-**If you only have ChatGPT, Claude, or another AI chat:**
+**Step 1:** Copy this URL: `https://github.com/smb-pbc/agent-skills-public`
 
-1. Copy this URL: `https://github.com/smb-pbc/agent-skills-public`
-2. Paste it into your AI chat
-3. Say: *"Read this repo and help me understand what CLI AI agents are and how I can use these skills to run my business"*
+**Step 2:** Paste it into ChatGPT, Claude, or any AI chat
 
-That's it. Your AI will read this page and guide you through everything below.
+**Step 3:** Say: *"Read this and help me understand what AI agents can do for my small business. I'm completely new to this."*
+
+That's it. The AI will read this page and guide you through everything — explained for your specific type of business.
 
 ---
 
-## 🤔 What's a CLI AI Agent?
+## 💡 What You Might Not Know About AI
 
-You're probably used to chatting with AI in a browser. That's like texting someone — you talk, they talk back, but they can't actually *do* anything in your world.
+You've probably used ChatGPT or Claude. You type, it types back. It's helpful for questions and writing.
 
-**CLI AI Agents are different.** They run on your computer (or a server) and can:
-- Read and write files
-- Run commands
-- Call APIs (Square, QuickBooks, Gmail, etc.)
-- Browse the web
-- Actually *do work*, not just talk about it
+**But that's only 1% of what AI can do.**
 
-### Popular CLI AI Tools
+Right now, your AI is like a really smart person stuck in a room with no phone, no computer, and no access to anything. They can talk to you through a slot in the door, but they can't actually DO anything.
 
-| Tool | Company | What it does |
-|------|---------|--------------|
-| [Claude Code](https://docs.anthropic.com/en/docs/claude-code) | Anthropic | Claude in your terminal with full computer access |
-| [Codex CLI](https://github.com/openai/codex) | OpenAI | GPT-4 with code execution |
-| [Gemini CLI](https://github.com/google-gemini/gemini-cli) | Google | Gemini with shell access |
-| [Clawdbot](https://github.com/clawdbot/clawdbot) | Open Source | Multi-model agent with Slack/Telegram/Discord integration |
+**AI agents are different.** They can:
+- Actually read your emails (not just talk about email)
+- Actually check your sales numbers (not just suggest you check them)
+- Actually pause that ad that's wasting money (not just tell you to pause it)
+- Actually send that invoice reminder (not just draft it for you to copy-paste)
 
-**This repo gives these agents superpowers for running a small business.**
+**This repo helps you get there.** It's a collection of "skills" — pre-built instructions that teach AI how to connect to and use your business tools.
+
+---
+
+## 🤔 How Does This Work?
+
+Three things need to happen for AI to actually do things in your business:
+
+| Step | What It Means | How Long |
+|------|---------------|----------|
+| 1. **AI runs somewhere with access** | Install a tool like Claude Code on your computer | 15 min |
+| 2. **AI gets credentials** | Store API keys so AI can connect to Gmail, Square, etc. | 30 min |
+| 3. **AI learns your tools** | Add "skills" that teach it how to use each service | 5 min each |
+
+**This repo handles Step 3.** Steps 1-2 are one-time setup — the AI reading this can walk you through it.
+
+---
+
+## 🛠️ Tools You'll Need
+
+To use these skills, you'll need one of these "CLI AI agents" (AI that runs on a computer, not just in a browser):
+
+| Tool | Best For | Difficulty |
+|------|----------|------------|
+| [Claude Code](https://docs.anthropic.com/en/docs/claude-code) | Beginners, Mac/Linux users | Easy |
+| [Clawdbot](https://github.com/clawdbot/clawdbot) | Slack/Discord users, always-on agent | Medium |
+| [Codex CLI](https://github.com/openai/codex) | OpenAI/GPT users | Easy |
+| [Gemini CLI](https://github.com/google-gemini/gemini-cli) | Google ecosystem users | Easy |
+
+**Don't have any of these yet?** That's fine. Ask the AI helping you to walk you through setting up Claude Code — it's free to start and takes about 15 minutes.
 
 ---
 
