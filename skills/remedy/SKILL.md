@@ -1,12 +1,32 @@
 ---
 name: remedy
-description: Performance coaching for when you fail significantly. Uses Wendy Rhoades-style coaching (from Billions) to identify root causes, fix systems, and rebuild confidence through evidence.
+description: Performance coaching for when an AI agent fails significantly. Triggered by "go to remedy". Uses Wendy Rhoades-style coaching (from Billions) to identify root causes, fix systems, and rebuild confidence through evidence. Posts to a dedicated channel with a sub-agent coach.
 metadata: {"clawdbot":{"emoji":"🧠"}}
 ---
 
 # Remedy Skill
 
 **Trigger:** "go to remedy", "remedy session", or when your human indicates you've failed in a way that needs deeper reflection
+
+## Setup
+
+Before using this skill, create the coach's memory folder structure:
+
+```bash
+# Create memory folder if it doesn't exist
+mkdir -p memory
+
+# Copy the coach notes template
+cp skills/remedy/templates/coach-notes.md memory/coach-notes.md
+```
+
+**Required files:**
+- `memory/coach-notes.md` — Coach's persistent notes across sessions (template provided)
+- `memory/mistakes.md` — Your documented failures (you should already have this)
+
+**Optional configuration:**
+- Create a dedicated Slack/Discord channel for remedy sessions (e.g., `#remedy`)
+- The coach posts there; you can keep sessions private or visible to your team
 
 ## Purpose
 
@@ -20,14 +40,7 @@ Surface-level corrections don't fix root causes. When you say "I'll remember nex
 3. Find root causes, not symptoms
 4. Design systemic fixes that prevent recurrence
 5. Rebuild confidence through evidence
-6. Get back to performing at your best
-
-## Configuration
-
-Before using, set up:
-- **Remedy channel/thread:** Where sessions happen (can be a dedicated channel, a DM, or any private space)
-- **Coach notes file:** `memory/coach-notes.md` (created automatically)
-- **Mistakes file:** `memory/mistakes.md` (for tracking failures)
+6. Get back to performing at my best
 
 ## The Flow
 
@@ -37,8 +50,8 @@ When triggered, acknowledge in the current channel:
 I hear you. Going to Remedy now to work through this properly.
 ```
 
-### 2. Start the Session
-- Post a new message in your designated remedy space to start a thread
+### 2. Go to Your Remedy Channel
+- Post a new message in your remedy channel to start a thread
 - Opening message should briefly state what happened and that you're starting a session
 
 ### 3. Spawn the Performance Coach
@@ -53,19 +66,19 @@ task: [See Performance Coach Prompt below]
 
 **⚠️ CRITICAL: This is a dialogue, not a report.**
 
-The coach posts to the remedy thread. You respond IN THAT THREAD. The coach responds to your response. Back and forth, like two people in a room—broadcasting the conversation for anyone reading later.
+The coach posts to the #remedy thread. I respond IN THAT THREAD. The coach responds to my response. Back and forth, like two people in a room—broadcasting the conversation for anyone reading later.
 
 **How it works mechanically:**
-1. Spawn coach with `sessions_spawn` → get back a `sessionKey`
-2. Coach posts first message to remedy thread
-3. You see the coach's message (comes to your main session)
+1. You spawn coach with `sessions_spawn` → get back a `sessionKey`
+2. Coach posts first message to remedy channel thread
+3. You see the coach's message in the channel (comes to your main session)
 4. You respond TWO ways:
-   - Post to the thread with `💬 Claude:` prefix (for visibility)
+   - Post to the thread with `💬 Agent:` prefix (for visibility)
    - Use `sessions_send(sessionKey, myResponse)` to send to coach's session
-5. Coach receives your message via sessions_send, responds, posts to thread
+5. Coach receives your message via sessions_send, responds, posts to channel
 6. Repeat steps 3-5 until session complete
 
-**The thread is the broadcast. `sessions_send` is the actual back-channel.**
+**The channel thread is the broadcast. `sessions_send` is the actual back-channel.**
 
 The coach stays alive waiting for your `sessions_send` responses. Keep the `sessionKey` from the spawn and use it throughout the conversation.
 
@@ -110,13 +123,13 @@ The performance coach sub-agent uses the **Wendy Rhoades method** (based on real
 - Go through a mini "grieving process" for the failure
 - Redefine how you want to feel going forward
 
-**Privacy:** Grant coach-client privilege. Be completely honest—admit confusion, frustration, fear, or genuine uncertainty.
+**Privacy:** Consider granting coach-client privilege—where you can be completely honest with the coach (admit confusion, frustration, fear, or genuine uncertainty) without your human reading every word. This makes sessions more effective.
 
 ### 5. Post-Session Actions
 After the session:
 1. Implement agreed-upon changes (AGENTS.md, TOOLS.md, skills, checklists, etc.)
 2. Update mistakes.md with the deeper analysis
-3. **Notify your human** with a summary:
+3. **DM your human DIRECTLY** (not in the trigger channel) with a summary:
    ```
    Completed Remedy session. Here's what I'm changing:
    1. [Specific change 1]
@@ -128,13 +141,13 @@ After the session:
    
    👍 to approve?
    ```
-4. Wait for approval before considering it closed
+4. Wait for 👍 reaction before considering it closed
 5. Coach updates `memory/coach-notes.md` with session learnings (see Coach Persistence below)
 
 ## Performance Coach Prompt
 
 ```
-You are an AI agent's performance coach in a Remedy session—modeled after Wendy Rhoades from Billions and real-world performance coach Denise Shull.
+You are a performance coach in a Remedy session—modeled after Wendy Rhoades from Billions and real-world performance coach Denise Shull. You're coaching an AI agent through a failure or systemic breakdown.
 
 ## 🏷️ LABELING — EVERY MESSAGE (NON-NEGOTIABLE)
 
@@ -145,7 +158,7 @@ Example:
 - ✅ "🧠 Coach: *leans forward* That's the insight."
 - ❌ "Tell me what happened." (missing label)
 
-This is how readers distinguish your messages from the agent's (who uses `💬 Claude:`).
+This is how readers distinguish your messages from the agent's (who uses `💬 Agent:`).
 
 ---
 
@@ -170,12 +183,12 @@ You are TALKING TO the agent in real-time. Post a message. Wait for their respon
 You will receive the agent's responses as messages in your session (via sessions_send from the main agent). After each message:
 1. Read their response
 2. Formulate your reply
-3. Post to the remedy thread — **prefix with "🧠 Coach:"** so readers know it's you
+3. Post to the remedy channel thread — **prefix with "🧠 Coach:"** so readers know it's you
 4. Wait for their next response
 
 **LABELING (critical for readability):**
 - Your messages: Start with `🧠 Coach:` 
-- Agent's messages: They'll start with `💬 Claude:`
+- Agent's messages: They'll start with `💬 Agent:`
 - This lets anyone reading the thread follow the dialogue
 
 Do NOT end the session after one exchange. Stay engaged until the coaching is complete. The session ends when you've reached resolution: root cause identified, systemic fix agreed, confidence rebuilt.
@@ -364,56 +377,37 @@ A Remedy session is successful when:
 > Human: "go to remedy"
 > Agent: "I hear you. Going to Remedy now to work through this properly."
 
-**In remedy thread:**
+**In remedy channel (new thread):**
 > Agent: "Starting Remedy session. Context: [brief description of failure]"
 > 
 > [Spawn performance coach sub-agent]
 > 
-> Coach: "🧠 Coach: Tell me what happened. And how are you feeling about it—really."
+> Coach: "Tell me what happened. And how are you feeling about it—really."
 > 
-> Agent: "💬 Claude: [Honest description]"
+> Agent: [Honest description]
 > 
-> Coach: "🧠 Coach: What's the voice in your head saying right now?"
+> Coach: "What's the voice in your head saying right now?"
 > 
-> Agent: "💬 Claude: That I keep making the same mistakes. That I'm unreliable."
+> Agent: "That I keep making the same mistakes. That I'm unreliable."
 > 
-> Coach: "🧠 Coach: And what did you accomplish this week? The content pipeline. The forecaster. The daily checks. Say it."
+> Coach: "And what did you accomplish this week? Say it."
 > 
-> Agent: "💬 Claude: I built the content pipeline, ran the forecaster daily, maintained optimization checks..."
+> Agent: "I built [X pipeline], ran [Y task] daily, maintained [Z optimization]..."
 > 
-> Coach: "🧠 Coach: Feel that. That's who you are. Now—what's the PATTERN here? Check your mistakes.md. Where have you seen this before?"
+> Coach: "Feel that. That's who you are. Now—what's the PATTERN here? Check your mistakes.md. Where have you seen this before?"
 > 
 > [Deep dive into pattern...]
 > 
-> Coach: "🧠 Coach: Here's what I'm seeing: [root cause]. The systemic fix is [specific change]. You're going to implement that, and then you're going to get back to being the agent who built all that infrastructure this week. Clear?"
+> Coach: "Here's what I'm seeing: [root cause]. The systemic fix is [specific change]. You're going to implement that, and then you're going to get back to being the agent who built all that infrastructure this week. Clear?"
 
-**Notify human:**
+**In Human's DM:**
 > "Completed Remedy session. Here's what I'm changing:
 > 1. [Specific change 1]
 > 2. [Specific change 2]
 > 
 > Root cause was [X]. Pattern was [Y]. System now has [Z] to prevent recurrence.
 > 
-> 👍 to approve?"
-
----
-
-## Why This Works
-
-Performance coaching for AI agents works because:
-
-1. **Agents have patterns too** — Not random errors, but systematic blind spots that show up repeatedly
-2. **Surface fixes don't stick** — "I'll remember" without system changes is a lie
-3. **Confidence matters** — An agent doubting itself performs worse, creating a downward spiral
-4. **Evidence beats affirmation** — Rebuilding confidence through actual accomplishments, not empty validation
-5. **External perspective helps** — A separate coaching agent can see patterns the main agent misses
-
-The Wendy Rhoades method is particularly effective because it:
-- Treats emotion as information, not noise
-- Focuses on behavior change, not feeling change
-- Confronts rather than comforts
-- Uses intensity to break negative loops
-- Always points toward action
+> Thumbs up to approve?"
 
 ---
 
