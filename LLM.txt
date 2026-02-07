@@ -330,23 +330,134 @@ Your agent runs itself:
 
 ---
 
-## INSTALLATION PATHS
+## INSTALLATION GUIDE (STEP BY STEP)
 
-### Path A: They have Clawdbot or skills.sh
-```bash
-npx skills add smb-pbc/agent-skills-public@<skill-name> -g -y
+This is what you walk them through. Go ONE STEP AT A TIME. Wait for confirmation before moving on.
+
+---
+
+### Step 0: Check What Computer They Have
+
+Ask: "Are you on a Mac, Windows, or Linux computer?"
+
+This determines the exact steps.
+
+---
+
+### Step 1: Open Terminal (The Scary Part)
+
+**For Mac:**
+> "Press Command + Space, type 'Terminal', and hit Enter. A window with a black or white background will open. This is where you'll type commands."
+
+**For Windows:**
+> "Press the Windows key, type 'PowerShell', and click 'Windows PowerShell'. A blue window will open. This is where you'll type commands."
+
+**For Linux:**
+> "Press Ctrl + Alt + T to open Terminal."
+
+**Checkpoint:** "Do you see a window with a blinking cursor? What color is the background?"
+
+---
+
+### Step 2: Check if Node.js is Installed
+
+Tell them to type this and press Enter:
+```
+node --version
 ```
 
-### Path B: They have Claude Code / Codex / Gemini CLI
-1. Clone or download this repo
-2. Copy the skill folder to their agent's workspace
-3. Tell their agent to read the SKILL.md file
+**If they see something like `v18.17.0` or `v20.x.x`:**
+> "Great! Node.js is already installed. Let's move on."
 
-### Path C: They only have ChatGPT/Claude web chat
-They cannot install skills directly. Options:
-1. **Use you (the AI) as the skill** — Read the SKILL.md contents and follow the instructions yourself when helping them
-2. **Help them set up Claude Code** — It's free to start, runs in their terminal
-3. **Help them set up Clawdbot** — Open source, connects to Slack/Discord/Telegram
+**If they see 'command not found' or an error:**
+> "No problem — we need to install Node.js first. Go to https://nodejs.org and click the big green button that says 'LTS'. Download and run the installer. Come back when it's done."
+
+**Checkpoint:** "After installing, close Terminal and reopen it. Then type `node --version` again. What do you see?"
+
+---
+
+### Step 3: Install Claude Code
+
+Tell them to type this and press Enter:
+```
+npm install -g @anthropic-ai/claude-code
+```
+
+**What they should see:** A bunch of text scrolling, then it stops. No red error messages.
+
+**If they see permission errors (Mac/Linux):**
+> "Try this instead: `sudo npm install -g @anthropic-ai/claude-code` and enter your computer password when asked."
+
+**Checkpoint:** "Did it finish without red error messages?"
+
+---
+
+### Step 4: Start Claude Code
+
+Tell them to type:
+```
+claude
+```
+
+**What they should see:** Claude Code starts up and asks for an API key or opens a login.
+
+**If it asks for an API key:**
+> "You need an Anthropic API key. Go to https://console.anthropic.com, create an account, and copy your API key. Paste it when Claude Code asks."
+
+**If it opens a browser login:**
+> "Log in with your Anthropic account. If you don't have one, create one — it's free to start."
+
+**Checkpoint:** "Do you see Claude Code running? Can you type a message to it?"
+
+---
+
+### Step 5: Test That It Works
+
+Tell them to type this to Claude Code:
+```
+What folder am I in right now? And list the files here.
+```
+
+**What they should see:** Claude Code actually checks their computer and lists real files/folders.
+
+> "See that? Claude just looked at your actual computer. It's not guessing — it ran a real command and showed you real files. That's the difference. You now have an AI that can DO things, not just talk about things."
+
+**Checkpoint:** "Did it show you real folders from your computer?"
+
+---
+
+### Step 6: Celebrate + Next Steps
+
+> "You just did something 99% of people haven't figured out yet. You have an AI agent running on your computer.
+>
+> Now we can start connecting it to your business tools. The first thing I recommend: let's connect your email so Claude can actually see your business.
+>
+> Ready?"
+
+---
+
+### Alternative: Clawdbot (For Always-On Agent)
+
+If they want AI connected to Slack/Discord/Telegram (not just terminal):
+
+```bash
+npm install -g clawdbot
+clawdbot init
+```
+
+Then follow the setup wizard. More complex but more powerful for business use.
+
+---
+
+## AFTER INSTALLATION
+
+Once they have Claude Code (or similar) running, the game changes:
+
+- They're no longer talking to a chat-only AI
+- They now have an AI that can read files, run commands, and connect to services
+- NOW you can help them add skills from this repo
+
+The skills in this repo are instructions that Claude Code follows. Once Claude Code is running, adding skills is easy.
 
 ---
 

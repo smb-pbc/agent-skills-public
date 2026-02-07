@@ -86,18 +86,51 @@ Think of it like this:
 
 ---
 
-## 🛠️ Tools You'll Need
+## 🛠️ How to Install an AI Agent (15 minutes)
 
-To use these skills, you'll need one of these "CLI AI agents" (AI that runs on a computer, not just in a browser):
+This is the one-time setup that lets AI actually do things on your computer.
+
+### Quick Version (Mac/Linux)
+
+Open Terminal and run:
+```bash
+# 1. Install Node.js if you don't have it (check with: node --version)
+#    Download from https://nodejs.org if needed
+
+# 2. Install Claude Code
+npm install -g @anthropic-ai/claude-code
+
+# 3. Start it
+claude
+```
+
+That's it. Claude Code will walk you through the rest.
+
+### Quick Version (Windows)
+
+Open PowerShell and run:
+```powershell
+# 1. Install Node.js from https://nodejs.org first
+
+# 2. Install Claude Code  
+npm install -g @anthropic-ai/claude-code
+
+# 3. Start it
+claude
+```
+
+### Need More Help?
+
+Ask the AI helping you to walk you through it step by step. Say: *"I need help installing Claude Code on my [Mac/Windows/Linux]. Start from the very beginning."*
+
+### Other Options
 
 | Tool | Best For | Difficulty |
 |------|----------|------------|
-| [Claude Code](https://docs.anthropic.com/en/docs/claude-code) | Beginners, Mac/Linux users | Easy |
-| [Clawdbot](https://github.com/clawdbot/clawdbot) | Slack/Discord users, always-on agent | Medium |
+| [Claude Code](https://docs.anthropic.com/en/docs/claude-code) | Beginners, Mac/Linux/Windows | Easy |
+| [Clawdbot](https://github.com/clawdbot/clawdbot) | Slack/Discord users, always-on | Medium |
 | [Codex CLI](https://github.com/openai/codex) | OpenAI/GPT users | Easy |
-| [Gemini CLI](https://github.com/google-gemini/gemini-cli) | Google ecosystem users | Easy |
-
-**Don't have any of these yet?** That's fine. Ask the AI helping you to walk you through setting up Claude Code — it's free to start and takes about 15 minutes.
+| [Gemini CLI](https://github.com/google-gemini/gemini-cli) | Google users | Easy |
 
 ---
 
