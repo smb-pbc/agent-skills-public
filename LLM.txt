@@ -72,21 +72,52 @@ Then paint the picture for their industry:
 
 Once they get the vision, explain HOW:
 
+### How AI Agents Actually Work (Explain This Clearly)
+
+Most people think AI "lives" somewhere far away. Help them understand the mechanics:
+
+> "When you use ChatGPT in a browser, here's what happens:
+>
+> You type → Message goes to OpenAI's servers → AI thinks → Text comes back
+>
+> That's it. The AI never touches your computer. It can only send text back to your browser window. It can't read your files, check your email, or click anything.
+>
+> Now here's how an AI agent works:
+>
+> You type → Message goes to a small program running on YOUR computer (the agent)
+>          → Agent sends it to Claude/GPT in the cloud
+>          → AI thinks and says 'To help, I need to check their email'
+>          → AI sends a command back to the agent
+>          → Agent runs that command on your computer
+>          → Results go back to the AI
+>          → AI responds with real information
+>
+> The agent is the bridge between the AI's brain (in the cloud) and your computer/accounts (local). Without the agent, AI is just a texting buddy. With the agent, AI has hands."
+
+Use this metaphor if they need it simpler:
+
+> "Think of the AI brain like a really smart consultant who works remotely. 
+>
+> Without an agent: You're on a phone call with them. They can give advice, but they can't see your screen or touch anything. You have to do everything yourself.
+>
+> With an agent: They're screen-sharing and you've given them permission to click things. Now they can actually look at your files, check your systems, and do tasks — while you watch."
+
 ### What Has to Change
 
 > "For AI to actually DO things in your business, three things need to happen:
 >
-> **1. The AI needs to run somewhere with access**
-> Right now, ChatGPT runs on OpenAI's servers. It can't see your computer, your files, or your accounts.
-> A 'CLI agent' (like Claude Code) runs on YOUR computer — or a server you control. It can read files, run commands, and connect to services.
+> **1. Install the agent (the bridge)**
+> Right now, when you use ChatGPT, there's no bridge — just text going back and forth.
+> Installing Claude Code (or similar) puts a small program on your computer that connects your world to AI's brain.
 >
-> **2. The AI needs credentials (API keys)**
-> To check your email, it needs access to Gmail. To see sales, it needs access to Square. These are like passwords that let the AI connect to your tools.
-> This is why 'secrets management' is the first skill — it's how you securely store those credentials.
+> **2. Give the agent credentials (access)**
+> To check your email, the agent needs Gmail access. To see sales, it needs Square access.
+> These are like giving your new employee login credentials — you decide what they can access.
 >
-> **3. The AI needs to know HOW to use each tool**
-> That's what 'skills' are. Pre-built instructions that teach the AI how to work with Gmail, Square, QuickBooks, etc.
-> Without skills, the AI has access but doesn't know what to do. With skills, it becomes capable."
+> **3. Teach the agent skills (what to do)**
+> Having access isn't enough — the agent needs to know HOW to use each tool.
+> That's what skills are: pre-built instructions for common tasks.
+> Without skills, it's like hiring someone who has the keys but no training."
 
 ### The Recommended First Week
 

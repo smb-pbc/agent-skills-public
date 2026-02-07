@@ -36,13 +36,43 @@ Right now, your AI is like a really smart person stuck in a room with no phone, 
 
 ## 🤔 How Does This Work?
 
-Three things need to happen for AI to actually do things in your business:
+### The Difference Between ChatGPT and AI Agents
+
+When you use ChatGPT in a browser:
+```
+You → type message → ChatGPT (cloud) → types back → You
+
+That's it. ChatGPT can't touch your computer. It just sends text.
+```
+
+When you use an AI agent (like Claude Code):
+```
+You → type message → Agent (your computer) → sends to Claude (cloud)
+                                           ↓
+Claude thinks: "To check email, I need to run this command..."
+                                           ↓
+                    Agent receives instructions ← Claude responds
+                                           ↓
+                    Agent runs the command on YOUR computer
+                                           ↓
+                    Results go back to Claude
+                                           ↓
+Claude: "You have 23 unread emails. 5 are from vendors..."
+```
+
+**The agent is the bridge.** It runs on your computer (or a server you control) and translates between you, the AI brain in the cloud, and your actual systems.
+
+Think of it like this:
+- **ChatGPT in browser** = A smart person texting you from another country. They can give advice but can't touch anything in your office.
+- **AI agent on your computer** = That same smart person sitting at a desk in your office, with access to your computer, your files, and whatever accounts you give them.
+
+### Three Things Need to Happen
 
 | Step | What It Means | How Long |
 |------|---------------|----------|
-| 1. **AI runs somewhere with access** | Install a tool like Claude Code on your computer | 15 min |
-| 2. **AI gets credentials** | Store API keys so AI can connect to Gmail, Square, etc. | 30 min |
-| 3. **AI learns your tools** | Add "skills" that teach it how to use each service | 5 min each |
+| 1. **Install the agent** | Put the "bridge" on your computer (Claude Code, etc.) | 15 min |
+| 2. **Store credentials safely** | Give the agent secure access to Gmail, Square, etc. | 30 min |
+| 3. **Add skills** | Teach the agent HOW to use each service | 5 min each |
 
 **This repo handles Step 3.** Steps 1-2 are one-time setup — the AI reading this can walk you through it.
 
