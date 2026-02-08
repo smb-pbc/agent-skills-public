@@ -247,6 +247,20 @@ Start with read-only. Expand later. You're always in control.
 |-------|-------------|---------|
 | [secrets-manager](./skills/tier-1-foundation/secrets-manager/) | Set up secure API key storage (GCP, AWS, Azure, etc.) | `npx skills add smb-pbc/agent-skills-public@secrets-manager -g -y` |
 
+### Tier 2: Communication
+*Connect your agent to the people in your business.*
+
+| Skill | Description | Install |
+|-------|-------------|---------|
+| [slack-directory](./skills/tier-2-communication/slack-directory/) | Look up Slack users by name with fuzzy matching. Caches discoveries for instant future lookups. | `npx skills add smb-pbc/agent-skills-public@slack-directory -g -y` |
+
+### Tier 4: Growth
+*Drive revenue through advertising, marketing, and SEO.*
+
+| Skill | Description | Install |
+|-------|-------------|---------|
+| [google-ads](./skills/tier-4-growth/google-ads/) | Create, query, audit, and optimize Google Ads campaigns. Battle-tested checklists and templates. | `npx skills add smb-pbc/agent-skills-public@google-ads -g -y` |
+
 ### Tier X: Agent Performance
 *Meta-skills for agent self-improvement.*
 
@@ -256,9 +270,9 @@ Start with read-only. Expand later. You're always in control.
 
 ### Coming Soon
 
-- **Tier 2: Communication** — Gmail, Google Calendar, Slack enhanced
+- **Tier 2: Communication** — Gmail, Google Calendar (expanding)
 - **Tier 3: Business Ops** — Square POS, QuickBooks, BigQuery analytics
-- **Tier 4: Growth** — Google Ads, Mailchimp, Instagram
+- **Tier 4: Growth** — Mailchimp, Instagram (expanding)
 - **Tier 5: Automation** — Daily digest, workflow builder, health monitor
 
 ---

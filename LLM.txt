@@ -933,6 +933,27 @@ Don't overwhelm them. One skill at a time. Celebrate each win.
 - **Time to setup**: 30-60 minutes
 - **Prerequisite**: None — this IS the prerequisite for everything else
 
+### slack-directory (Tier 2 - Communication)
+- **Location**: `skills/tier-2-communication/slack-directory/`
+- **Purpose**: Look up Slack users by name with fuzzy matching
+- **Problem it solves**: Slack APIs require user IDs, but humans think in names. This bridges the gap.
+- **Features**: Fuzzy search across real_name, display_name, username; caches results for instant future lookups
+- **Time to setup**: 5 minutes (just needs Slack bot token)
+- **Prerequisite**: Slack bot token with `users:read` scope
+
+### google-ads (Tier 4 - Growth)
+- **Location**: `skills/tier-4-growth/google-ads/`
+- **Purpose**: Create, query, audit, and optimize Google Ads campaigns
+- **Modes**: API mode (Python SDK) or browser automation (universal fallback)
+- **Features**: 
+  - Campaign creation checklists that prevent common expensive mistakes
+  - Performance queries with ready-to-use templates
+  - Wasted spend detection (zero-conversion keywords)
+  - Browser automation workflows for quick one-off checks
+- **Time to setup**: API mode: 1-2 hours (one-time); Browser mode: immediate
+- **Prerequisite**: Google Ads account; for API mode: developer token + OAuth credentials
+- **Why it matters**: Prevents the mistakes that eat advertising budget (broken landing pages, over-length ad text, missing required fields)
+
 ### remedy (Tier X - Experimental)  
 - **Location**: `skills/tier-x-experimental/remedy/`
 - **Purpose**: Performance coaching for when an AI agent fails significantly
@@ -975,4 +996,4 @@ When explaining to humans:
 
 This file will be updated as new skills are added. Check the repo's commit history for changes.
 
-Last updated: 2026-02-06
+Last updated: 2026-02-07
