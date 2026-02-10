@@ -954,6 +954,15 @@ Don't overwhelm them. One skill at a time. Celebrate each win.
 - **Prerequisite**: Google Ads account; for API mode: developer token + OAuth credentials
 - **Why it matters**: Prevents the mistakes that eat advertising budget (broken landing pages, over-length ad text, missing required fields)
 
+### playbook-discovery (Tier 5 - Automation)
+- **Location**: `skills/tier-5-automation/playbook-discovery/`
+- **Purpose**: Analyze historical email/calendar/files to discover repeatable workflows
+- **Method**: Pattern recognition across people, topics, time, and process flows
+- **Outputs**: Documented playbooks with triggers, steps, inputs, outputs, and edge cases
+- **Why it matters**: Before you can automate, you need to know WHAT to automate. This skill surfaces the patterns hiding in your daily work.
+- **Time to value**: 1-2 hours of data collection, then immediate insights
+- **Prerequisite**: At least one data source connected (email, calendar, files)
+
 ### remedy (Tier X - Experimental)  
 - **Location**: `skills/tier-x-experimental/remedy/`
 - **Purpose**: Performance coaching for when an AI agent fails significantly

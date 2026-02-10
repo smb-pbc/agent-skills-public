@@ -261,6 +261,13 @@ Start with read-only. Expand later. You're always in control.
 |-------|-------------|---------|
 | [google-ads](./skills/tier-4-growth/google-ads/) | Create, query, audit, and optimize Google Ads campaigns. Battle-tested checklists and templates. | `npx skills add smb-pbc/agent-skills-public@google-ads -g -y` |
 
+### Tier 5: Automation
+*Discover and automate repeatable workflows.*
+
+| Skill | Description | Install |
+|-------|-------------|---------|
+| [playbook-discovery](./skills/tier-5-automation/playbook-discovery/) | Analyze your email/calendar/files to discover repeatable workflows that AI can automate. | `npx skills add smb-pbc/agent-skills-public@playbook-discovery -g -y` |
+
 ### Tier X: Agent Performance
 *Meta-skills for agent self-improvement.*
 
@@ -273,7 +280,7 @@ Start with read-only. Expand later. You're always in control.
 - **Tier 2: Communication** — Gmail, Google Calendar (expanding)
 - **Tier 3: Business Ops** — Square POS, QuickBooks, BigQuery analytics
 - **Tier 4: Growth** — Mailchimp, Instagram (expanding)
-- **Tier 5: Automation** — Daily digest, workflow builder, health monitor
+- **Tier 5: Automation** — Daily digest, workflow builder, health monitor (expanding)
 
 ---
 
