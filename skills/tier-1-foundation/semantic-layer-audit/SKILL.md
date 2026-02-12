@@ -1,37 +1,72 @@
 ---
 name: semantic-layer-audit
-description: Audit and maintain a data semantic layer for AI agents. Scans BigQuery datasets, GCP APIs, secrets, and service accounts to keep your data catalog current. Essential for any agent that needs to know "what data do I have access to?"
+description: Audit and maintain a data semantic layer for AI agents. Discovers what data infrastructure exists (BigQuery, Snowflake, Redshift, Postgres, etc.) and keeps your data catalog current. Essential for any agent that needs to know "what data do I have access to?"
 ---
 
 # Semantic Layer Audit
 
 > **Why this matters:** AI agents can only use data they know about. This skill maintains a living data catalog so you never lose track of available datasets, APIs, or credentials.
 
-## Prerequisites
+## Step 1: Discover Data Infrastructure
 
-- **GCP Project** with BigQuery enabled
-- **gcloud CLI** authenticated (`gcloud auth login`)
-- **bq CLI** (comes with gcloud)
-- **Environment variable:** `GCP_PROJECT_ID` set to your project
+**Before running any scripts, ask the user:**
+
+> "Where does your data live? Do you have a data warehouse or database I should know about?"
+
+Common setups:
+| Platform | Signs to Look For |
+|----------|-------------------|
+| **BigQuery** | GCP project, `bq` CLI, `GOOGLE_APPLICATION_CREDENTIALS` |
+| **Snowflake** | `snowsql` CLI, `SNOWFLAKE_ACCOUNT` env var |
+| **Redshift** | AWS account, `psql` with Redshift endpoint |
+| **Databricks** | Databricks workspace, Unity Catalog |
+| **PostgreSQL** | `psql`, `DATABASE_URL`, connection strings |
+| **None yet** | Help them set one up or document raw sources |
+
+**If they don't know:** Check for existing credentials, connection strings, or environment variables that hint at a data warehouse.
+
+## Step 2: Run Platform-Specific Audit
+
+### For GCP/BigQuery Users
+
+**Prerequisites:**
+- gcloud CLI authenticated (`gcloud auth login`)
+- `GCP_PROJECT_ID` environment variable set
 
 ```bash
-# Set your project
 export GCP_PROJECT_ID="your-project-id"
-
-# Verify access
-gcloud config set project $GCP_PROJECT_ID
-bq ls --project_id=$GCP_PROJECT_ID
-```
-
-## Quick Start
-
-```bash
-# Run full infrastructure audit
 python3 scripts/audit_infrastructure.py > audit-results.json
-
-# Review and update your semantic layer doc
-# (see templates/SEMANTIC-LAYER-TEMPLATE.md)
 ```
+
+### For Other Platforms
+
+The included script is GCP-focused. For other platforms:
+
+**Snowflake:**
+```sql
+-- List databases and schemas
+SHOW DATABASES;
+SHOW SCHEMAS IN DATABASE your_db;
+SHOW TABLES IN SCHEMA your_db.your_schema;
+```
+
+**PostgreSQL/Redshift:**
+```sql
+-- List schemas and tables
+SELECT schemaname, tablename FROM pg_tables WHERE schemaname NOT IN ('pg_catalog', 'information_schema');
+```
+
+**Databricks:**
+```sql
+-- Unity Catalog
+SHOW CATALOGS;
+SHOW SCHEMAS IN catalog_name;
+SHOW TABLES IN catalog_name.schema_name;
+```
+
+Document findings manually in your SEMANTIC-LAYER.md using the template.
+
+## Step 3: Document Everything
 
 ## When to Run
 

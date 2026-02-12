@@ -13,11 +13,24 @@ AI agents can only use data they know about. Without a maintained semantic layer
 - Knowledge degrades over time
 
 This skill solves that by providing:
-1. **Automated scanning** of your GCP infrastructure
-2. **Structured audit process** to catch changes
-3. **Template** for documenting your data catalog
+1. **Discovery process** to identify where data lives
+2. **Automated scanning** for supported platforms (GCP/BigQuery)
+3. **Structured audit process** to catch changes
+4. **Template** for documenting your data catalog
 
-## What It Scans
+## Supported Platforms
+
+| Platform | Automation | Manual Guidance |
+|----------|------------|-----------------|
+| **GCP/BigQuery** | ✅ Full script | — |
+| **Snowflake** | — | ✅ SQL snippets |
+| **Redshift** | — | ✅ SQL snippets |
+| **Databricks** | — | ✅ SQL snippets |
+| **PostgreSQL** | — | ✅ SQL snippets |
+
+The included Python script scans GCP infrastructure. For other platforms, the skill provides SQL snippets and guides you through manual documentation.
+
+## What the GCP Script Scans
 
 - **BigQuery:** All datasets, tables, row counts
 - **Secret Manager:** All credentials (inventory only, not values)
