@@ -2,6 +2,8 @@
 
 **Turn your AI from a chatbot into a business operator.**
 
+*Part of [PBC OS](https://github.com/pbc-os) — open-source AI infrastructure for small business.*
+
 ---
 
 ## 🚀 Brand New to This?
@@ -341,7 +343,20 @@ These skills were built at [Prospect Butcher Co](https://prospectbutcher.co), a 
 
 Everything here was battle-tested on a real business before being published.
 
-**PBC by PBC** = Proper Business Chat by Prospect Butcher Co. Coming soon: pre-configured hardware (Raspberry Pi) with Clawdbot ready to go.
+---
+
+## 🏗️ Part of PBC OS
+
+This repo is one piece of **[PBC OS](https://github.com/pbc-os)** — open-source AI infrastructure for small businesses.
+
+**The vision:** PBC OS is your backoffice AI. It helps you make informed decisions faster — and then *acts on those decisions for you*. It's entirely dedicated to your business with no other biases.
+
+| Repo | What It Does |
+|------|--------------|
+| **[agent-skills-public](https://github.com/pbc-os/agent-skills-public)** | Reusable AI agent skills (this repo) |
+| **[pbc-x402-api](https://github.com/pbc-os/pbc-x402-api)** | Accept payments from AI agents |
+
+**Coming soon: PBC by PBC** — Pre-configured Raspberry Pi 5 hardware (~$100) with everything ready to go. Run your own AI, on your own hardware, for your own business.
 
 ---
 
