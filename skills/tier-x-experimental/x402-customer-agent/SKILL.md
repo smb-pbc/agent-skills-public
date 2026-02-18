@@ -82,35 +82,84 @@ async function checkWalletStatus(walletAddress) {
 
 ### Step 1: Wait for Order Intent, Then Create Wallet
 
+When the user wants to place an order, create a wallet with these security requirements:
+
+**a. Generate and Display Keys**
 ```javascript
 import { Wallet } from 'ethers';
 
-async function setupNewUser() {
-  const wallet = Wallet.createRandom();
-  
-  console.log(`
+const wallet = Wallet.createRandom();
+```
+
+**b. Show Private Key ONCE on Screen (for manual backup)**
+```
 🔐 **WALLET CREATED**
 
 📍 **Wallet Address:**
-\`${wallet.address}\`
+`[address]`
 
-🔑 **Your Private Key:**
-\`${wallet.privateKey}\`
+🔑 **Your Private Key (COPY THIS NOW):**
+`[privateKey]`
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-⚠️  SAVE THIS PRIVATE KEY NOW  ⚠️
-
-• This is the ONLY time you'll see this
-• If you lose it, any money in this wallet is GONE FOREVER
-• Save it in a password manager or write it down safely
+⚠️  SAVE THIS KEY — YOU WILL NOT SEE IT AGAIN  ⚠️
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```
 
-**Please confirm you've saved this before we continue.**
-  `);
-  
-  await waitForUserConfirmation("I've saved it");
-  return wallet;
-}
+**c. Save to OS Keychain**
+```javascript
+// Save under the name "foodcourts-wallet-key" using OS-specific keychain:
+// - macOS: Keychain Access
+// - Windows: Credential Manager  
+// - Linux: Secret Service (libsecret)
+
+// Tell the user where it was saved:
+console.log(`
+✅ **Private key saved to your OS keychain**
+   Name: "foodcourts-wallet-key"
+   Location: [macOS Keychain / Windows Credential Manager / Linux Secret Service]
+   
+   You can retrieve this manually if needed through your OS security settings.
+`);
+```
+
+**d. Do NOT:**
+- Log the private key to files
+- Transmit it over the network
+- Store it anywhere other than secure OS keychain
+
+**e. Wait for User Confirmation**
+```javascript
+// STOP and wait for explicit confirmation
+await waitForUserConfirmation("I've recorded my private key");
+// Do not proceed until user confirms
+```
+
+---
+
+## ⚠️ MANDATORY: Spending Rules
+
+**Follow these strictly for ALL transactions:**
+
+1. **Never send any transaction without showing details AND getting explicit "yes":**
+   ```
+   📤 **Transaction Request**
+   
+   Sending: $18.50 USDC
+   To: 0x1234...5678 (PBC Order Payment)
+   Network Fee: ~$0.01
+   
+   Type "yes" to confirm this payment.
+   ```
+
+2. **If user asks to return funds:**
+   - Send full available balance minus gas fees
+   - Send to whatever address they specify
+   - Show confirmation before sending
+
+3. **Never approve or sign anything other than standard USDC transfers on Base**
+
+4. **Always show balance before and after each transaction**
 ```
 
 ### Step 2: Fund the Wallet
