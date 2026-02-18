@@ -1,6 +1,6 @@
 ---
 name: x402-customer-agent
-description: Enable AI agents to order from Prospect Butcher Co via x402 protocol. Handles wallet creation, OAuth authentication, funding, and payment. Use when customer wants to order food from PBC.
+description: Enable AI agents to order from Prospect Butcher Co via x402 protocol. Handles wallet creation, funding, and payment. Use when customer wants to order food from PBC.
 triggers:
   - order food
   - order sandwich
@@ -14,9 +14,9 @@ triggers:
 
 # PBC x402 Agent Skill
 
-**Purpose:** Enable AI agents to order from Prospect Butcher Co (PBC) via x402 payments.
-**Restaurant:** pbc.foodcourts.ai
-**Last Updated:** 2026-02-17
+**Purpose:** Enable AI agents to order from Prospect Butcher Co (PBC) via USDC payments.
+**API Base:** pbc.foodcourts.ai
+**Last Updated:** 2026-02-17 (Stripe Deposit Addresses)
 
 ---
 
@@ -24,366 +24,219 @@ triggers:
 
 | What | Where |
 |------|-------|
-| OAuth Auth | `pbc.foodcourts.ai/auth` |
-| Profile API | `pbc.foodcourts.ai/api/profile` |
-| Balance API | `pbc.foodcourts.ai/api/balance` |
-| Fund Page | `pbc.foodcourts.ai/fund` |
 | Menu API | `pbc.foodcourts.ai/api/menu` |
+| Hours API | `pbc.foodcourts.ai/api/hours` |
 | Order API | `pbc.foodcourts.ai/api/order` |
+| Order Status | `pbc.foodcourts.ai/api/order/:id` |
+| Fund Page | `pbc.foodcourts.ai/fund` |
 
 ---
 
-## Session Start: Check Authentication Status
+## Payment Flow (Stripe Deposit Addresses)
 
-**Every session, check if you have stored credentials:**
+The PBC API uses Stripe's native crypto payment infrastructure. The flow is:
 
-```javascript
-// Check for stored OAuth token
-const storedAuth = await agent.secrets.get('pbc-foodcourts-auth');
+1. **POST /api/order** with items + customer info
+2. **Get 402 Payment Required** with unique Stripe deposit address
+3. **Send USDC** to the deposit address on Base network
+4. **Payment auto-confirms** when USDC arrives (Stripe detects it)
+5. **Poll for status** or receive webhook callback
+6. **Customer picks up** at the Brooklyn shop
 
-if (storedAuth?.token) {
-  // Returning user - validate and continue
-  await handleReturningUser(storedAuth);
-} else {
-  // New user - wait until they want to order
-  await handleNewUser();
-}
-```
+**Key difference from legacy x402:** No need to retry the request with X-PAYMENT header. Once payment is sent, Stripe handles confirmation automatically via webhook.
 
 ---
 
-## Flow 1: Returning User (Has OAuth Token)
-
-### Step 1: Validate Token
+## Session Start: Wallet Status Check
 
 ```javascript
-async function handleReturningUser(storedAuth) {
-  const response = await fetch('https://pbc.foodcourts.ai/api/profile', {
-    headers: { 'Authorization': `Bearer ${storedAuth.token}` }
-  });
-  
-  if (response.status === 401) {
-    // Token expired - need reauth
-    await triggerReauth();
-    return;
+// Check if customer has a funded wallet
+async function checkWalletStatus(walletAddress) {
+  if (!walletAddress) {
+    return { ready: false, reason: 'no_wallet' };
   }
   
-  const profile = await response.json();
-  // profile = { wallet: "0x...", email: "...", name: "..." }
-  
-  // Check balance
-  const balance = await checkBalance(profile.wallet);
-  
-  // Ready to take orders
-  console.log(`Wallet: ${profile.wallet}, Balance: $${balance} USDC`);
-}
-```
-
-### Step 2: Handle Expired Token (Reauth)
-
-```javascript
-async function triggerReauth() {
-  // Open browser popup for customer to re-authenticate
-  const authUrl = 'https://pbc.foodcourts.ai/auth?reauth=true';
-  
-  // Present to user:
-  console.log(`
-🔐 **Session Expired**
-
-I need you to re-authorize my access to your FoodCourts account.
-
-👉 **Click here to log in:** ${authUrl}
-
-This confirms you're the owner of your agent wallet. 
-Once you've logged in, I'll be able to check your balance and place orders.
-  `);
-  
-  // After OAuth callback, agent receives new token
-  // Store it for future sessions
-}
-```
-
-### OAuth Callback Handling
-
-```javascript
-// Your agent receives callback with authorization code
-// Exchange for token:
-async function handleOAuthCallback(code) {
-  const response = await fetch('https://pbc.foodcourts.ai/api/auth/token', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ 
-      code,
-      grant_type: 'authorization_code'
-    })
-  });
-  
-  const { access_token, refresh_token, wallet, expires_in } = await response.json();
-  
-  // Store securely in agent's local secrets
-  await agent.secrets.set('pbc-foodcourts-auth', {
-    token: access_token,
-    refresh: refresh_token,
-    wallet: wallet,
-    expires: Date.now() + (expires_in * 1000)
-  });
-  
-  return wallet;
-}
-```
-
----
-
-## Flow 2: New User (No OAuth Token)
-
-**Don't create wallet immediately.** Wait until customer expresses intent to order.
-
-### Step 1: Wait for Order Intent
-
-When customer says something like "I'm hungry" or "order lunch":
-
-```
-Great! I can order from Prospect Butcher Co for you. They have amazing 
-sandwiches and butcher items.
-
-Before I can place orders, we'll need to:
-1. Create a payment wallet for you (one-time setup, ~2 min)
-2. Link it to a FoodCourts account
-3. Add funds for your order
-
-Want to see the menu first, or ready to set up?
-```
-
-### Step 2: Show Menu (Optional)
-
-```javascript
-// Fetch menu without auth
-const menu = await fetch('https://pbc.foodcourts.ai/api/menu');
-const items = await menu.json();
-
-// Present to user:
-console.log(`
-📋 **Prospect Butcher Co Menu**
-
-🥪 SANDWICHES
-${items.sandwiches.map(s => `• ${s.name} — $${s.price}\n  ${s.description}`).join('\n')}
-
-🥩 BUTCHER
-${items.butcher.map(b => `• ${b.name} — $${b.price}/lb`).join('\n')}
-
-Ready to order? I'll help you set up payment.
-`);
-```
-
-### Step 3: Generate Wallet (When Ready to Order)
-
-```javascript
-import { Wallet } from 'ethers';
-
-async function setupNewUser() {
-  // Generate wallet
-  const wallet = Wallet.createRandom();
-  const address = wallet.address;
-  const privateKey = wallet.privateKey;
-  
-  // IMMEDIATELY show private key to user with warnings
-  console.log(`
-🔐 **WALLET CREATED**
-
-I've created a payment wallet for you. This is where your funds will live.
-
-📍 **Wallet Address:**
-\`${address}\`
-
-🔑 **Your Private Key:**
-\`${privateKey}\`
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-⚠️  SAVE THIS PRIVATE KEY NOW  ⚠️
-
-• This is the ONLY time you'll see this
-• FoodCourts CANNOT recover it — we don't store private keys
-• If you lose it, any money in this wallet is GONE FOREVER
-• Save it in a password manager or write it down safely
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-**Please confirm you've saved this before we continue.**
-Type "I've saved it" to proceed.
-  `);
-  
-  // Wait for confirmation before continuing
-  await waitForUserConfirmation("I've saved it");
-  
-  return { address, privateKey };
-}
-```
-
-### Step 4: OAuth + Profile Creation
-
-```javascript
-async function linkWalletToProfile(walletAddress) {
-  // Generate OAuth URL with wallet address
-  const authUrl = `https://pbc.foodcourts.ai/auth?wallet=${walletAddress}`;
-  
-  console.log(`
-✅ Private key saved!
-
-Now let's link your wallet to a FoodCourts account. This lets me:
-• Check your balance
-• Place orders on your behalf
-• Remember you next time
-
-👉 **Click here to create your account:**
-${authUrl}
-
-You can sign in with Google or create an account with email.
-Come back here once you're done!
-  `);
-  
-  // Agent waits for OAuth callback with token
-  // Then stores token locally
-}
-```
-
-### Step 5: Add Funds (Per-Order)
-
-```javascript
-async function promptForFunds(orderTotal, currentBalance) {
-  const needed = orderTotal - currentBalance;
-  
-  if (needed <= 0) {
-    // Already have enough
-    return true;
-  }
-  
-  // Suggest funding just this order + small buffer
-  const suggestedAmount = Math.ceil(needed + 2); // +$2 buffer
-  
-  console.log(`
-💳 **Add Funds to Complete Order**
-
-Order total: $${orderTotal.toFixed(2)}
-Current balance: $${currentBalance.toFixed(2)}
-${needed > 0 ? `Needed: $${needed.toFixed(2)}` : ''}
-
-👉 **Add funds here:** https://pbc.foodcourts.ai/fund
-
-I'd suggest adding $${suggestedAmount} to cover this order.
-(You control how much — just needs to cover the $${orderTotal.toFixed(2)} total)
-
-Let me know when you've added funds and I'll complete your order!
-  `);
-}
-```
-
----
-
-## Placing Orders
-
-### Pre-Order Checklist
-
-```javascript
-async function canPlaceOrder(walletAddress, orderTotal) {
-  // 1. Verify we have valid auth
-  const auth = await agent.secrets.get('pbc-foodcourts-auth');
-  if (!auth?.token) {
-    return { ready: false, reason: 'auth_required' };
-  }
-  
-  // 2. Check balance
-  const balance = await checkBalance(walletAddress);
-  if (balance < orderTotal) {
-    return { ready: false, reason: 'insufficient_funds', balance, needed: orderTotal };
-  }
-  
-  // 3. Check restaurant hours
-  const hours = await fetch('https://pbc.foodcourts.ai/api/hours');
-  const { isOpen } = await hours.json();
-  if (!isOpen) {
-    return { ready: false, reason: 'restaurant_closed' };
+  const balance = await getUSDCBalance(walletAddress);
+  if (balance < 10) {  // Minimum for a sandwich order
+    return { ready: false, reason: 'low_balance', balance };
   }
   
   return { ready: true, balance };
 }
 ```
 
-### Submit Order
+**Key principle:** Don't create a wallet until the customer wants to order. Browsing the menu doesn't require a wallet.
+
+---
+
+## Flow 1: New User Setup
+
+### When to Create Wallet
+
+| User Action | What To Do |
+|-------------|------------|
+| "What's on the menu?" | Show menu (no wallet needed) |
+| "What can I order?" | Show menu (no wallet needed) |
+| "I want to order" | NOW create wallet → fund → order |
+| "I'm hungry" | NOW create wallet → fund → order |
+
+### Step 1: Wait for Order Intent, Then Create Wallet
 
 ```javascript
-async function placeOrder(items, walletAddress, privateKey) {
-  // 1. Create order (returns 402 with payment details)
-  const orderResponse = await fetch('https://pbc.foodcourts.ai/api/order', {
-    method: 'POST',
-    headers: { 
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${auth.token}`
-    },
-    body: JSON.stringify({ items, wallet: walletAddress })
-  });
+import { Wallet } from 'ethers';
+
+async function setupNewUser() {
+  const wallet = Wallet.createRandom();
   
-  if (orderResponse.status !== 402) {
-    throw new Error('Unexpected response');
-  }
+  console.log(`
+🔐 **WALLET CREATED**
+
+📍 **Wallet Address:**
+\`${wallet.address}\`
+
+🔑 **Your Private Key:**
+\`${wallet.privateKey}\`
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+⚠️  SAVE THIS PRIVATE KEY NOW  ⚠️
+
+• This is the ONLY time you'll see this
+• If you lose it, any money in this wallet is GONE FOREVER
+• Save it in a password manager or write it down safely
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+**Please confirm you've saved this before we continue.**
+  `);
   
-  // 2. Parse payment requirements
-  const paymentDetails = await orderResponse.json();
-  const { payTo, amount, orderId } = paymentDetails;
-  
-  // 3. Send USDC payment
-  const txHash = await sendUSDC(privateKey, payTo, amount);
-  
-  // 4. Confirm payment
-  const confirmResponse = await fetch('https://pbc.foodcourts.ai/api/order/confirm', {
-    method: 'POST',
-    headers: { 
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${auth.token}`
-    },
-    body: JSON.stringify({ orderId, txHash })
-  });
-  
-  const order = await confirmResponse.json();
-  return order;
+  await waitForUserConfirmation("I've saved it");
+  return wallet;
 }
 ```
 
-### Order Confirmation Message
+### Step 2: Fund the Wallet
 
-```
-✅ **Order Placed!**
+```javascript
+async function promptForFunds(walletAddress, orderTotal) {
+  const suggestedAmount = Math.ceil(orderTotal + 5); // Buffer for future orders
+  
+  console.log(`
+💳 **Add Funds to Your Wallet**
 
-🧾 Order #${order.id}
-📍 Pickup at: ${order.location}
-⏰ Ready in: ~${order.estimatedMinutes} minutes
+Send USDC to your wallet on Base network:
 
-**Items:**
-${order.items.map(i => `• ${i.name} — $${i.price}`).join('\n')}
+📍 **Your Address:**
+\`${walletAddress}\`
 
-💰 Total: $${order.total} USDC
-💳 Remaining balance: $${order.remainingBalance}
+💰 **Suggested Amount:** $${suggestedAmount} USDC
+   (This order is $${orderTotal.toFixed(2)})
 
-🔗 Transaction: https://basescan.org/tx/${order.txHash}
+**How to send from Coinbase:**
+1. Open Coinbase app → USDC → Send
+2. Paste the address above
+3. ⚠️ Select "Base" as the network (important!)
+4. Enter amount and send
 
-Your order has been sent to the kitchen!
+Let me know when you've added funds!
+  `);
+}
 ```
 
 ---
 
-## Helper Functions
+## Flow 2: Placing an Order
 
-### Check Balance
+### Step 1: Check Menu and Hours
 
 ```javascript
-async function checkBalance(walletAddress) {
-  const response = await fetch(
-    `https://pbc.foodcourts.ai/api/balance?wallet=${walletAddress}`
-  );
-  const { balance } = await response.json();
-  return parseFloat(balance);
+// Get menu
+const menuResponse = await fetch('https://pbc.foodcourts.ai/api/menu');
+const menu = await menuResponse.json();
+
+// Check if shop is open
+const hoursResponse = await fetch('https://pbc.foodcourts.ai/api/hours?location=shop-2');
+const hours = await hoursResponse.json();
+
+if (!hours.isOpen) {
+  console.log(`Shop is closed. ${hours.message}`);
+  return;
 }
 ```
 
-### Send USDC Payment
+### Step 2: Submit Order (Get Payment Instructions)
+
+```javascript
+async function createOrder(items, location, customer) {
+  const response = await fetch('https://pbc.foodcourts.ai/api/order', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      items,           // e.g., ["boudinwich", "ramune"]
+      location,        // "shop-1" or "shop-2"
+      customer: {
+        name: customer.name,
+        phone: customer.phone,
+        email: customer.email  // optional
+      },
+      // Optional: Get status callbacks
+      agentCallback: {
+        type: "webhook",
+        url: "https://your-agent.com/callbacks"
+      }
+    })
+  });
+
+  // Will return 402 Payment Required with deposit address
+  if (response.status === 402) {
+    const paymentDetails = await response.json();
+    return paymentDetails;
+  }
+  
+  throw new Error(`Unexpected status: ${response.status}`);
+}
+```
+
+### Step 3: Parse Payment Instructions
+
+The 402 response includes:
+
+```json
+{
+  "status": 402,
+  "message": "Payment required",
+  "orderId": "PBC-ABC123",
+  "items": [{"id": "boudinwich", "name": "Boudinwich", "price": 16}],
+  "subtotal": 16.00,
+  "tax": 1.42,
+  "serviceFee": 1.00,
+  "total": 18.42,
+  "payment": {
+    "required": true,
+    "amount": 18.42,
+    "currency": "USD",
+    "asset": "USDC",
+    "network": "Base",
+    "chainId": 8453,
+    "depositAddress": "0x...",  // Unique per order
+    "expiresAt": "2026-02-17T15:30:00Z",
+    "expiresIn": "10 minutes",
+    "instructions": [
+      "Send exactly $18.42 USDC to the deposit address below",
+      "Network: Base (chain ID 8453)",
+      "The address expires in 10 minutes"
+    ]
+  },
+  "pickup": {
+    "location": "Prospect Butcher Co (Greenpoint)",
+    "address": "113A Nassau Ave, Brooklyn NY 11222"
+  },
+  "_polling": {
+    "statusUrl": "/api/order/PBC-ABC123",
+    "interval": "30 seconds"
+  }
+}
+```
+
+### Step 4: Send Payment
 
 ```javascript
 import { Wallet, JsonRpcProvider, Contract, parseUnits } from 'ethers';
@@ -391,7 +244,7 @@ import { Wallet, JsonRpcProvider, Contract, parseUnits } from 'ethers';
 const USDC_ADDRESS = '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913';
 const BASE_RPC = 'https://mainnet.base.org';
 
-async function sendUSDC(privateKey, to, amount) {
+async function sendPayment(privateKey, depositAddress, amount) {
   const provider = new JsonRpcProvider(BASE_RPC);
   const wallet = new Wallet(privateKey, provider);
   
@@ -399,81 +252,106 @@ async function sendUSDC(privateKey, to, amount) {
     'function transfer(address to, uint256 amount) returns (bool)'
   ], wallet);
   
-  const tx = await usdc.transfer(to, parseUnits(amount.toString(), 6));
-  await tx.wait();
+  // USDC has 6 decimals
+  const amountWei = parseUnits(amount.toString(), 6);
   
+  const tx = await usdc.transfer(depositAddress, amountWei);
+  const receipt = await tx.wait();
+  
+  console.log(`✅ Payment sent: ${tx.hash}`);
   return tx.hash;
 }
 ```
 
----
-
-## Secure Storage Pattern
-
-**What the agent stores locally:**
+### Step 5: Poll for Confirmation
 
 ```javascript
-// In agent's secure local storage (e.g., secrets manager, keychain)
-{
-  "pbc-foodcourts-auth": {
-    "token": "eyJ...",           // OAuth access token
-    "refresh": "dGhpcyBp...",    // Refresh token
-    "wallet": "0xAbC123...",     // Wallet address (NOT private key)
-    "expires": 1739847600000     // Token expiry timestamp
+async function waitForConfirmation(orderId, maxAttempts = 20) {
+  for (let i = 0; i < maxAttempts; i++) {
+    const response = await fetch(`https://pbc.foodcourts.ai/api/order/${orderId}`);
+    const order = await response.json();
+    
+    if (order.status === 'pending_chownow' || order.status === 'confirmed') {
+      return order;  // Payment confirmed!
+    }
+    
+    if (order.status === 'payment_failed' || order.status === 'payment_expired') {
+      throw new Error(`Payment ${order.status}: ${order._status.message}`);
+    }
+    
+    // Wait 10 seconds between polls
+    await new Promise(r => setTimeout(r, 10000));
   }
+  
+  throw new Error('Timeout waiting for payment confirmation');
 }
 ```
 
-**What the agent NEVER stores:**
-- Private key (customer's responsibility)
-- Transaction history with payment details
+---
 
-**What FoodCourts stores:**
-- User profile (email, name)
-- Wallet address
-- Order history
-- Funding transaction records
+## Complete Order Flow Example
+
+```javascript
+async function orderSandwich(customer, items, location = 'shop-2') {
+  // 1. Create order and get payment instructions
+  const paymentDetails = await createOrder(items, location, customer);
+  
+  console.log(`
+🧾 **Order Created: ${paymentDetails.orderId}**
+
+Total: $${paymentDetails.total.toFixed(2)}
+
+📍 **Send USDC to:**
+\`${paymentDetails.payment.depositAddress}\`
+
+⏰ Payment expires: ${paymentDetails.payment.expiresIn}
+  `);
+
+  // 2. Send payment (using customer's wallet)
+  const txHash = await sendPayment(
+    customerPrivateKey,
+    paymentDetails.payment.depositAddress,
+    paymentDetails.payment.amount
+  );
+  
+  console.log(`
+💸 **Payment Sent!**
+Transaction: https://basescan.org/tx/${txHash}
+Waiting for confirmation...
+  `);
+
+  // 3. Wait for order confirmation
+  const confirmedOrder = await waitForConfirmation(paymentDetails.orderId);
+  
+  console.log(`
+✅ **Order Confirmed!**
+
+🧾 Order: ${confirmedOrder.orderId}
+📍 Pickup: ${confirmedOrder.locationName}
+⏰ Ready in: ~20 minutes
+🔗 Transaction: https://basescan.org/tx/${txHash}
+
+Your sandwich is being prepared!
+  `);
+  
+  return confirmedOrder;
+}
+```
 
 ---
 
-## User Communication Templates
+## Order Status Values
 
-### Wallet Status (Returning User)
-
-```
-👋 Welcome back!
-
-📍 Your wallet: \`${wallet}\`
-💰 Balance: $${balance} USDC
-
-What would you like to order today?
-```
-
-### Low Balance Warning
-
-```
-⚠️ **Low Balance**
-
-Your wallet has $${balance}, but this order is $${orderTotal}.
-
-👉 Add $${needed} more at: https://pbc.foodcourts.ai/fund
-
-Let me know when done!
-```
-
-### Restaurant Closed
-
-```
-😔 **PBC is currently closed**
-
-Hours: 
-• Mon-Sat: 11am - 7pm ET
-• Sun: 11am - 5pm ET
-
-Current time: ${currentTime} ET
-
-Want me to remind you when they open?
-```
+| Status | Meaning |
+|--------|---------|
+| `pending_payment` | Awaiting USDC payment |
+| `paid` | Payment confirmed |
+| `pending_chownow` | Queued for fulfillment |
+| `confirmed` | Order placed with kitchen |
+| `ready_for_pickup` | Order ready |
+| `picked_up` | Complete |
+| `payment_expired` | 10-minute window expired |
+| `payment_failed` | Payment issue |
 
 ---
 
@@ -481,34 +359,98 @@ Want me to remind you when they open?
 
 | Error | Cause | Response |
 |-------|-------|----------|
-| `auth_expired` | OAuth token expired | Trigger reauth popup |
-| `auth_required` | No stored token | Start new user flow |
+| `shop_closed` | Outside business hours | Show hours, offer to check later |
 | `insufficient_funds` | Balance < order total | Prompt to add funds |
-| `restaurant_closed` | Outside business hours | Show hours, offer reminder |
-| `item_unavailable` | Menu item sold out | Show alternatives |
-| `payment_failed` | Transaction failed | Retry or escalate |
+| `payment_expired` | Took >10 min to pay | Need to create new order |
+| `invalid_items` | Menu items not found | Show menu, ask to re-select |
+
+---
+
+## Agent Callbacks (Optional)
+
+Set `agentCallback` in order request to receive status updates:
+
+```javascript
+{
+  agentCallback: {
+    type: "webhook",           // or "clawdbot"
+    url: "https://...",        // Your callback endpoint
+    agentId: "agent-123"       // Optional identifier
+  }
+}
+```
+
+You'll receive POST notifications for status changes:
+
+```json
+{
+  "orderId": "PBC-ABC123",
+  "status": "confirmed",
+  "location": "Prospect Butcher Co (Greenpoint)",
+  "message": "Your order is being prepared!",
+  "estimatedReady": "2026-02-17T15:45:00Z"
+}
+```
 
 ---
 
 ## Security Notes
 
-1. **OAuth token = agent identity.** Safe to store, revocable, expires. NOT the private key.
+1. **Private key stays with customer.** Never store it. Customer provides for transactions.
 
-2. **Private key stays with customer.** Agent never stores it. Customer provides when needed for transactions, or agent prompts them to sign.
+2. **Deposit addresses are unique per order.** Don't reuse them.
 
-3. **Reauth verifies ownership.** If someone tries to use a different wallet, OAuth will fail because the wallet is linked to the original profile.
+3. **10-minute expiration.** If payment isn't sent in time, create a new order.
 
-4. **Funds per-order.** Don't encourage loading up large balances. Suggest just enough for current order + small buffer.
+4. **Base network only.** Sending USDC on Ethereum mainnet won't work.
 
 ---
 
-## Complete Example Conversation
+## User Communication Templates
 
-See `examples/complete-flow.md` for a full conversation showing:
-- New user setup
-- Returning user quick order
-- Handling expired auth
-- Low balance prompt
+### Order Ready
+
+```
+✅ **Order Placed!**
+
+🧾 Order #${orderId}
+📍 Pickup at: ${locationName}
+📍 Address: ${address}
+⏰ Ready in: ~20 minutes
+
+**Items:**
+${items.map(i => `• ${i.name} — $${i.price}`).join('\n')}
+
+💰 Total: $${total} USDC
+🔗 Transaction: https://basescan.org/tx/${txHash}
+
+Your sandwich is being prepared!
+```
+
+### Low Balance
+
+```
+⚠️ **Not Enough Funds**
+
+Your wallet has $${balance} USDC, but this order is $${orderTotal}.
+
+To complete this order, send $${needed} more USDC to your wallet:
+\`${walletAddress}\`
+
+Remember to select "Base" as the network in Coinbase!
+```
+
+### Shop Closed
+
+```
+😔 **PBC is currently closed**
+
+${message}
+
+Hours: Mon-Sat 11am-7pm ET
+
+Would you like me to remind you when they open?
+```
 
 ---
 
@@ -517,3 +459,4 @@ See `examples/complete-flow.md` for a full conversation showing:
 - [x402 Protocol](https://x402.org)
 - [Base Network](https://docs.base.org)
 - [BaseScan](https://basescan.org)
+- [USDC on Base](https://basescan.org/token/0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913)
