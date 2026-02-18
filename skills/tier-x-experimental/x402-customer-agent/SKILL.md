@@ -1,6 +1,6 @@
 ---
 name: x402-customer-agent
-description: Enable AI agents to order from Prospect Butcher Co via x402 protocol. Handles wallet creation, funding, and payment. Use when customer wants to order food from PBC.
+description: Enable AI agents to order food via x402/USDC payments. Handles wallet creation, profile linking, funding, and ordering. Works for both new users (full onboarding) and existing users (wallet linking only). Detects context from Profile ID.
 triggers:
   - order food
   - order sandwich
@@ -10,13 +10,17 @@ triggers:
   - hungry
   - lunch
   - get food
+  - link wallet
+  - connect wallet
+  - my profile id is
 ---
 
-# PBC x402 Agent Skill
+# x402 Customer Agent Skill
 
-**Purpose:** Enable AI agents to order from Prospect Butcher Co (PBC) via USDC payments.
-**API Base:** pbc.foodcourts.ai
-**Last Updated:** 2026-02-17 (Stripe Deposit Addresses)
+**Purpose:** Enable AI agents to order food via USDC payments on Base network.
+**Supports:** New user onboarding OR existing user wallet linking (auto-detects)
+**API Base:** foodcourts.ai
+**Last Updated:** 2026-02-17
 
 ---
 
@@ -29,6 +33,47 @@ triggers:
 | Order API | `pbc.foodcourts.ai/api/order` |
 | Order Status | `pbc.foodcourts.ai/api/order/:id` |
 | Fund Page | `pbc.foodcourts.ai/fund` |
+
+---
+
+## 🔀 Context Detection: New User vs Existing User
+
+**This skill handles TWO scenarios. Detect which one based on user input:**
+
+| User Input Contains | Flow | What To Do |
+|---------------------|------|------------|
+| **Profile ID** (e.g., "my Profile ID is ABC123") | **Existing User** | Skip profile creation → wallet → link → fund |
+| **No Profile ID** | **New User** | Full flow: wallet → create profile → link → fund |
+
+### Existing User Flow (Profile ID provided)
+```
+User already has FoodCourts account (logged in at /profile).
+They just need to connect an agent wallet.
+
+1. Create wallet (with key handling below)
+2. Link wallet to their existing Profile ID  
+3. Guide them to fund via https://foodcourts.ai/fund
+4. Ready to order
+```
+
+### New User Flow (no Profile ID)
+```
+User doesn't have a FoodCourts account yet.
+
+1. Create wallet (with key handling below)
+2. Send them to create profile: https://foodcourts.ai/signup?wallet=[address]
+3. They create account (Google OAuth)
+4. Wallet auto-links during signup
+5. Guide them to fund
+6. Ready to order
+```
+
+**Profile linking endpoint:**
+```
+POST https://foodcourts.ai/api/profile
+Body: { "address": "0x...", "label": "Agent Wallet" }
+Requires: User must be authenticated (session cookie)
+```
 
 ---
 
@@ -69,7 +114,29 @@ async function checkWalletStatus(walletAddress) {
 
 ---
 
-## Flow 1: New User Setup
+## Flow 0: Existing User (Profile ID Provided)
+
+**Use this flow when user provides a Profile ID** (e.g., "my Profile ID is ABC123")
+
+### Steps:
+1. **Create wallet** (follow key handling in "Step 1" below)
+2. **Link to existing profile:**
+   ```
+   Tell user: "I've created your wallet. Now let's link it to your FoodCourts profile."
+   
+   Direct them to: https://foodcourts.ai/profile
+   They should click "Add Wallet" and paste: [wallet address]
+   
+   Or if they're already on the profile page, they can add it directly.
+   ```
+3. **Fund the wallet** (follow "Step 2" below)
+4. **Ready to order**
+
+**Skip:** Profile/account creation (they already have one)
+
+---
+
+## Flow 1: New User Setup (No Profile ID)
 
 ### When to Create Wallet
 
