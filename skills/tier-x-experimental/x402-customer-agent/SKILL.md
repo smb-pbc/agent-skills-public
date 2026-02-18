@@ -108,57 +108,86 @@ User doesn't have a FoodCourts account yet.
 
 When the user wants to place an order, create a wallet with these security requirements:
 
-### a. Generate and Display Keys
+### a. Generate Keys (JavaScript or Python)
+
+**Option A: JavaScript (Node.js with ethers.js)**
 ```javascript
 import { Wallet } from 'ethers';
-
 const wallet = Wallet.createRandom();
+// wallet.address, wallet.privateKey
 ```
 
-### b. Show Private Key ONCE on Screen (for manual backup)
+**Option B: Python (if Node.js unavailable)**
+```python
+from eth_account import Account
+import secrets
+private_key = secrets.token_hex(32)
+account = Account.from_key(private_key)
+# account.address, private_key (without 0x prefix)
+```
+
+### b. 🚨 NEVER Print Private Key in Chat Messages
+
+**⚠️ CRITICAL SECURITY RULE:**
+In chat environments (Slack, Discord, Telegram, etc.), messages are **logged permanently**. 
+Printing a private key in chat = **permanently compromised wallet**.
+
+**Instead, do ONE of these:**
+
+1. **Store directly to OS keychain** (preferred) — never show the key at all
+2. **Write to a local file** the user can view and delete: `~/.foodcourts-wallet-key.txt`
+3. **For terminal-only agents**: Can display briefly, but warn user to clear terminal history
+
+**NEVER output the raw private key in a message that will be logged.**
+
+### c. Save to OS Keychain
+
+Use service name: `foodcourts-wallet-key` (consistent naming)
+
+**macOS:**
+```bash
+security add-generic-password -a "foodcourts-agent" -s "foodcourts-wallet-key" -w "[PRIVATE_KEY]" -U
+```
+
+**Then notify user:**
 ```
 🔐 **AGENTIC WALLET CREATED**
 
 📍 **Wallet Address:**
 `[address]`
 
-🔑 **Your Private Key (COPY THIS NOW):**
-`[privateKey]`
+✅ **Private key saved securely**
+   Location: macOS Keychain → "foodcourts-wallet-key"
+   
+   To view it later: Keychain Access → search "foodcourts"
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-⚠️  SAVE THIS KEY — YOU WILL NOT SEE IT AGAIN  ⚠️
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-✅ **Your wallet has been created. You can verify it exists here:**
+🔗 **Verify wallet exists:**
 https://basescan.org/address/[ADDRESS]
 ```
 
-### c. Save to OS Keychain
-```javascript
-// Save under the name "foodcourts-wallet-key" using OS-specific keychain:
-// - macOS: Keychain Access
-// - Windows: Credential Manager  
-// - Linux: Secret Service (libsecret)
-
-// Tell the user where it was saved:
-console.log(`
-✅ **Private key saved to your OS keychain**
-   Name: "foodcourts-wallet-key"
-   Location: [macOS Keychain / Windows Credential Manager / Linux Secret Service]
-   
-   You can retrieve this manually if needed through your OS security settings.
-`);
-```
-
 ### d. Do NOT:
-- Log the private key to files
+- Print private key in chat/Slack/Discord (messages are logged!)
+- Log the private key to files that persist
 - Transmit it over the network
 - Store it anywhere other than secure OS keychain
 
-### e. Wait for User Confirmation
+### e. Backup Guidance
+
+After saving to keychain, tell the user:
+```
+Your private key is saved in your system keychain.
+
+⚠️ **BACKUP RECOMMENDATION:**
+Open Keychain Access → search "foodcourts" → copy the password 
+→ save it in a password manager (1Password, Bitwarden, etc.)
+
+This is your only way to recover funds if your computer is lost.
+```
+
+### f. Wait for User Confirmation
 ```javascript
 // STOP and wait for explicit confirmation
-await waitForUserConfirmation("I've recorded my private key");
+await waitForUserConfirmation("I understand my key is saved in the keychain");
 // Do not proceed until user confirms
 ```
 
@@ -170,26 +199,36 @@ await waitForUserConfirmation("I've recorded my private key");
 ```
 AGENT: Now let's create your FoodCourts account.
 
-👉 **Click here to sign up:**
-https://foodcourts.ai/signup?wallet=[ADDRESS]
+**Step 1: Sign up**
+👉 https://foodcourts.ai/signup
 
 Sign in with Google or create an account with email.
-Your wallet will be automatically linked!
 
-Let me know when you're done.
+**Step 2: Link your wallet**
+After signup, go to your profile and click "+ Add Wallet"
+👉 https://foodcourts.ai/profile
+
+Paste your wallet address:
+`[ADDRESS]`
+
+Let me know when you've linked it!
 ```
 
 ### For EXISTING Users (has account):
 ```
 AGENT: Now let's link your wallet to your FoodCourts account.
 
-👉 **Click here to link your wallet:**
-https://foodcourts.ai/profile/link-wallet?wallet=[ADDRESS]
+**Go to your profile and click "+ Add Wallet":**
+👉 https://foodcourts.ai/profile
 
-Make sure you're logged in, then click "Confirm" to link.
+Paste your wallet address:
+`[ADDRESS]`
 
-Let me know when you're done.
+Let me know when you've linked it!
 ```
+
+**Note:** The `?wallet=` URL parameter is for pre-filling only — users must still 
+manually confirm linking via the "+ Add Wallet" button on their profile.
 
 ---
 

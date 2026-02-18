@@ -166,17 +166,23 @@ async function payViaManagedWallet(walletId, toAddress, amount) {
 
 ---
 
-## Option C: Standard Ethereum Wallet (ethers.js)
+## Option C: Standard Ethereum Wallet (ethers.js or Python)
 
 **Best for:** Agents that need full control, custom integrations, or can't use Coinbase services.
 
 ### Installation
 
+**JavaScript:**
 ```bash
 npm install ethers
 ```
 
-### Create New Wallet
+**Python (fallback when Node.js unavailable):**
+```bash
+pip install eth-account
+```
+
+### Create New Wallet (JavaScript)
 
 ```javascript
 import { Wallet, JsonRpcProvider } from 'ethers';
@@ -185,11 +191,49 @@ import { Wallet, JsonRpcProvider } from 'ethers';
 const wallet = Wallet.createRandom();
 
 console.log('Address:', wallet.address);
-console.log('Private Key:', wallet.privateKey);
+// DON'T print privateKey to logged output - store directly to keychain
 
 // CRITICAL: Store private key securely
 await secretsManager.set('agent-wallet-private-key', wallet.privateKey);
 await secretsManager.set('agent-wallet-address', wallet.address);
+```
+
+### Create New Wallet (Python)
+
+```python
+from eth_account import Account
+import secrets
+
+# Generate random private key (32 bytes = 64 hex chars)
+private_key = secrets.token_hex(32)
+
+# Create account from private key
+account = Account.from_key(private_key)
+
+print(f'Address: {account.address}')
+# DON'T print private_key to logged output - store directly to keychain
+
+# Store to macOS Keychain
+import subprocess
+subprocess.run([
+    'security', 'add-generic-password',
+    '-a', 'foodcourts-agent',
+    '-s', 'foodcourts-wallet-key',
+    '-w', private_key,
+    '-U'  # Update if exists
+], check=True)
+```
+
+### Retrieve from Keychain (Python)
+```python
+import subprocess
+result = subprocess.run([
+    'security', 'find-generic-password',
+    '-a', 'foodcourts-agent',
+    '-s', 'foodcourts-wallet-key',
+    '-w'  # Output password only
+], capture_output=True, text=True)
+private_key = result.stdout.strip()
 ```
 
 ### Load Existing Wallet
@@ -280,26 +324,52 @@ async function sendUSDC(to: string, amountUSD: number) {
 
 ## Human-Facing Wallet Creation Message
 
-When creating a wallet for a user, use this simplified messaging:
+### 🚨 CRITICAL: Chat Message Security
 
+**NEVER print the private key directly in chat messages (Slack, Discord, Telegram, etc.)**
+
+Chat messages are **logged permanently**. A private key in a chat message = permanently compromised wallet.
+
+### Safe Approaches
+
+**1. Store directly to OS keychain (PREFERRED):**
+```bash
+# macOS
+security add-generic-password -a "foodcourts-agent" -s "foodcourts-wallet-key" -w "[PRIVATE_KEY]" -U
+```
+
+Then tell the user:
 ```
 🔐 **AGENTIC WALLET CREATED**
 
 📍 **Wallet Address:**
 `[address]`
 
-🔑 **Your Private Key (COPY THIS NOW):**
-`[privateKey]`
+✅ **Private key saved securely**
+   Location: macOS Keychain → "foodcourts-wallet-key"
+   
+   To backup: Keychain Access → search "foodcourts" → copy the password
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-⚠️  SAVE THIS KEY — YOU WILL NOT SEE IT AGAIN  ⚠️
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-✅ **Your wallet has been created. You can verify it exists here:**
+🔗 **Verify wallet exists:**
 https://basescan.org/address/[ADDRESS]
 ```
 
-**Do NOT mention:** USDC, crypto, blockchain, Base network, Coinbase to the human. Keep it simple.
+**2. Write to local file (if keychain unavailable):**
+```
+~/.foodcourts-wallet-key.txt
+```
+Tell user to view it locally and delete after backing up.
+
+**3. Terminal-only agents (ephemeral display OK):**
+If running in a terminal that isn't logged, can display briefly.
+Warn user to clear terminal history afterward.
+
+### Do NOT:
+- Print private key in Slack/Discord/Telegram messages
+- Include private key in any logged output
+- Store in plain text files that persist
+
+**Do NOT mention to user:** USDC, crypto, blockchain, Base network, Coinbase. Keep it simple.
 
 ---
 
