@@ -1,6 +1,6 @@
 ---
 name: x402-customer-agent
-description: Enable AI agents to order food via x402/USDC payments. Handles wallet creation, profile linking, funding, and ordering. Works for both new users (full onboarding) and existing users (wallet linking only). Detects context from Profile ID.
+description: Enable AI agents to order food via x402 payments. Handles wallet creation, profile linking, funding, and ordering. Works for both new users (full onboarding) and existing users (wallet linking only). Detects context from Profile ID.
 triggers:
   - order food
   - order sandwich
@@ -17,7 +17,7 @@ triggers:
 
 # x402 Customer Agent Skill
 
-**Purpose:** Enable AI agents to order food via USDC payments on Base network.
+**Purpose:** Enable AI agents to order food via automated payments.
 **Supports:** New user onboarding OR existing user wallet linking (auto-detects)
 **API Base:** foodcourts.ai
 **Last Updated:** 2026-02-17
@@ -32,52 +32,214 @@ triggers:
 | Hours API | `pbc.foodcourts.ai/api/hours` |
 | Order API | `pbc.foodcourts.ai/api/order` |
 | Order Status | `pbc.foodcourts.ai/api/order/:id` |
-| Fund Page | `pbc.foodcourts.ai/fund` |
+| Fund Page | `foodcourts.ai/fund` |
 
 ---
 
-## 🔀 Context Detection: New User vs Existing User
+## 🔀 User Flow Detection
 
-**This skill handles TWO scenarios. Detect which one based on user input:**
+**Always start by asking:** "Do you already have a FoodCourts account?"
 
-| User Input Contains | Flow | What To Do |
-|---------------------|------|------------|
-| **Profile ID** (e.g., "my Profile ID is ABC123") | **Existing User** | Skip profile creation → wallet → link → fund |
-| **No Profile ID** | **New User** | Full flow: wallet → create profile → link → fund |
+| User Response | Flow | What To Do |
+|---------------|------|------------|
+| **YES** (has account) | **Existing User** | Ask for Profile ID → wallet → link → fund |
+| **NO** (new user) | **New User** | Full flow: wallet → signup URL → fund |
+| **Profile ID provided** (e.g., "my Profile ID is ABC123") | **Existing User** | Skip question → wallet → link → fund |
 
-### Existing User Flow (Profile ID provided)
+---
+
+## Existing User Flow (Has FoodCourts Account)
+
 ```
-User already has FoodCourts account (logged in at /profile).
-They just need to connect an agent wallet.
+User already has FoodCourts account.
+They just need to connect an agentic wallet.
 
-1. Create wallet (with key handling below)
-2. Link wallet to their existing Profile ID  
-3. Guide them to fund via https://foodcourts.ai/fund
-4. Ready to order
+1. Ask for their Profile ID (visible at foodcourts.ai/profile)
+2. Create wallet (with key handling below)
+3. Show wallet proof URL
+4. Direct them to link: https://foodcourts.ai/profile/link-wallet?wallet=[ADDRESS]
+5. Guide them to fund via https://foodcourts.ai/fund
+6. Ready to order
 ```
 
-### New User Flow (no Profile ID)
+### Step 1: Get Profile ID
+
+```
+AGENT: Great! To link a wallet to your existing account, I'll need your 
+Profile ID. You can find it at https://foodcourts.ai/profile
+
+What's your Profile ID?
+
+USER: It's ABC123
+
+AGENT: Got it! Creating your agentic wallet now...
+```
+
+---
+
+## New User Flow (No FoodCourts Account)
+
 ```
 User doesn't have a FoodCourts account yet.
 
 1. Create wallet (with key handling below)
-2. Send them to create profile: https://foodcourts.ai/signup?wallet=[address]
-3. They create account (Google OAuth)
-4. Wallet auto-links during signup
-5. Guide them to fund
-6. Ready to order
-```
-
-**Profile linking endpoint:**
-```
-POST https://foodcourts.ai/api/profile
-Body: { "address": "0x...", "label": "Agent Wallet" }
-Requires: User must be authenticated (session cookie)
+2. Show wallet proof URL
+3. Send them to create profile: https://foodcourts.ai/signup?wallet=[ADDRESS]
+4. They create account (Google OAuth)
+5. Wallet auto-links during signup
+6. Guide them to fund
+7. Ready to order
 ```
 
 ---
 
-## Payment Flow (Stripe Deposit Addresses)
+## When to Create Wallet
+
+| User Action | What To Do |
+|-------------|------------|
+| "What's on the menu?" | Show menu (no wallet needed) |
+| "What can I order?" | Show menu (no wallet needed) |
+| "I want to order" | Ask about FoodCourts account → create wallet → fund → order |
+| "I'm hungry" | Ask about FoodCourts account → create wallet → fund → order |
+
+---
+
+## Step 1: Create Wallet
+
+When the user wants to place an order, create a wallet with these security requirements:
+
+### a. Generate and Display Keys
+```javascript
+import { Wallet } from 'ethers';
+
+const wallet = Wallet.createRandom();
+```
+
+### b. Show Private Key ONCE on Screen (for manual backup)
+```
+🔐 **AGENTIC WALLET CREATED**
+
+📍 **Wallet Address:**
+`[address]`
+
+🔑 **Your Private Key (COPY THIS NOW):**
+`[privateKey]`
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+⚠️  SAVE THIS KEY — YOU WILL NOT SEE IT AGAIN  ⚠️
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ **Your wallet has been created. You can verify it exists here:**
+https://basescan.org/address/[ADDRESS]
+```
+
+### c. Save to OS Keychain
+```javascript
+// Save under the name "foodcourts-wallet-key" using OS-specific keychain:
+// - macOS: Keychain Access
+// - Windows: Credential Manager  
+// - Linux: Secret Service (libsecret)
+
+// Tell the user where it was saved:
+console.log(`
+✅ **Private key saved to your OS keychain**
+   Name: "foodcourts-wallet-key"
+   Location: [macOS Keychain / Windows Credential Manager / Linux Secret Service]
+   
+   You can retrieve this manually if needed through your OS security settings.
+`);
+```
+
+### d. Do NOT:
+- Log the private key to files
+- Transmit it over the network
+- Store it anywhere other than secure OS keychain
+
+### e. Wait for User Confirmation
+```javascript
+// STOP and wait for explicit confirmation
+await waitForUserConfirmation("I've recorded my private key");
+// Do not proceed until user confirms
+```
+
+---
+
+## Step 2: Link Wallet to Account
+
+### For NEW Users (no account):
+```
+AGENT: Now let's create your FoodCourts account.
+
+👉 **Click here to sign up:**
+https://foodcourts.ai/signup?wallet=[ADDRESS]
+
+Sign in with Google or create an account with email.
+Your wallet will be automatically linked!
+
+Let me know when you're done.
+```
+
+### For EXISTING Users (has account):
+```
+AGENT: Now let's link your wallet to your FoodCourts account.
+
+👉 **Click here to link your wallet:**
+https://foodcourts.ai/profile/link-wallet?wallet=[ADDRESS]
+
+Make sure you're logged in, then click "Confirm" to link.
+
+Let me know when you're done.
+```
+
+---
+
+## Step 3: Fund the Wallet
+
+**Human-facing message (simple, no crypto jargon):**
+```
+AGENT: Now let's add funds so you can place orders.
+
+💳 **Add funds to your wallet:**
+https://foodcourts.ai/fund
+
+**Order Summary:**
+• The Pitmaster — $16.50
+• Tax — $1.47
+• **Total: $17.97**
+
+I'd suggest adding $20 to cover this order with a small buffer.
+Let me know when you've added funds!
+```
+
+---
+
+## ⚠️ MANDATORY: Spending Rules
+
+**Follow these strictly for ALL transactions:**
+
+1. **Never send any transaction without showing details AND getting explicit "yes":**
+   ```
+   📤 **Transaction Request**
+   
+   Sending: $18.50
+   To: PBC Order Payment
+   Network Fee: ~$0.01
+   
+   Type "yes" to confirm this payment.
+   ```
+
+2. **If user asks to return funds:**
+   - Send full available balance minus fees
+   - Send to whatever address they specify
+   - Show confirmation before sending
+
+3. **Never approve or sign anything other than standard transfers**
+
+4. **Always show balance before and after each transaction**
+
+---
+
+## Payment Flow (Technical - Agent Only)
 
 The PBC API uses Stripe's native crypto payment infrastructure. The flow is:
 
@@ -88,7 +250,10 @@ The PBC API uses Stripe's native crypto payment infrastructure. The flow is:
 5. **Poll for status** or receive webhook callback
 6. **Customer picks up** at the Brooklyn shop
 
-**Key difference from legacy x402:** No need to retry the request with X-PAYMENT header. Once payment is sent, Stripe handles confirmation automatically via webhook.
+**Technical Details (hidden from user):**
+- Network: Base (Chain ID 8453)
+- Token: USDC
+- USDC Contract: 0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913
 
 ---
 
@@ -114,152 +279,7 @@ async function checkWalletStatus(walletAddress) {
 
 ---
 
-## Flow 0: Existing User (Profile ID Provided)
-
-**Use this flow when user provides a Profile ID** (e.g., "my Profile ID is ABC123")
-
-### Steps:
-1. **Create wallet** (follow key handling in "Step 1" below)
-2. **Link to existing profile:**
-   ```
-   Tell user: "I've created your wallet. Now let's link it to your FoodCourts profile."
-   
-   Direct them to: https://foodcourts.ai/profile
-   They should click "Add Wallet" and paste: [wallet address]
-   
-   Or if they're already on the profile page, they can add it directly.
-   ```
-3. **Fund the wallet** (follow "Step 2" below)
-4. **Ready to order**
-
-**Skip:** Profile/account creation (they already have one)
-
----
-
-## Flow 1: New User Setup (No Profile ID)
-
-### When to Create Wallet
-
-| User Action | What To Do |
-|-------------|------------|
-| "What's on the menu?" | Show menu (no wallet needed) |
-| "What can I order?" | Show menu (no wallet needed) |
-| "I want to order" | NOW create wallet → fund → order |
-| "I'm hungry" | NOW create wallet → fund → order |
-
-### Step 1: Wait for Order Intent, Then Create Wallet
-
-When the user wants to place an order, create a wallet with these security requirements:
-
-**a. Generate and Display Keys**
-```javascript
-import { Wallet } from 'ethers';
-
-const wallet = Wallet.createRandom();
-```
-
-**b. Show Private Key ONCE on Screen (for manual backup)**
-```
-🔐 **WALLET CREATED**
-
-📍 **Wallet Address:**
-`[address]`
-
-🔑 **Your Private Key (COPY THIS NOW):**
-`[privateKey]`
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-⚠️  SAVE THIS KEY — YOU WILL NOT SEE IT AGAIN  ⚠️
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-```
-
-**c. Save to OS Keychain**
-```javascript
-// Save under the name "foodcourts-wallet-key" using OS-specific keychain:
-// - macOS: Keychain Access
-// - Windows: Credential Manager  
-// - Linux: Secret Service (libsecret)
-
-// Tell the user where it was saved:
-console.log(`
-✅ **Private key saved to your OS keychain**
-   Name: "foodcourts-wallet-key"
-   Location: [macOS Keychain / Windows Credential Manager / Linux Secret Service]
-   
-   You can retrieve this manually if needed through your OS security settings.
-`);
-```
-
-**d. Do NOT:**
-- Log the private key to files
-- Transmit it over the network
-- Store it anywhere other than secure OS keychain
-
-**e. Wait for User Confirmation**
-```javascript
-// STOP and wait for explicit confirmation
-await waitForUserConfirmation("I've recorded my private key");
-// Do not proceed until user confirms
-```
-
----
-
-## ⚠️ MANDATORY: Spending Rules
-
-**Follow these strictly for ALL transactions:**
-
-1. **Never send any transaction without showing details AND getting explicit "yes":**
-   ```
-   📤 **Transaction Request**
-   
-   Sending: $18.50 USDC
-   To: 0x1234...5678 (PBC Order Payment)
-   Network Fee: ~$0.01
-   
-   Type "yes" to confirm this payment.
-   ```
-
-2. **If user asks to return funds:**
-   - Send full available balance minus gas fees
-   - Send to whatever address they specify
-   - Show confirmation before sending
-
-3. **Never approve or sign anything other than standard USDC transfers on Base**
-
-4. **Always show balance before and after each transaction**
-```
-
-### Step 2: Fund the Wallet
-
-```javascript
-async function promptForFunds(walletAddress, orderTotal) {
-  const suggestedAmount = Math.ceil(orderTotal + 5); // Buffer for future orders
-  
-  console.log(`
-💳 **Add Funds to Your Wallet**
-
-Send USDC to your wallet on Base network:
-
-📍 **Your Address:**
-\`${walletAddress}\`
-
-💰 **Suggested Amount:** $${suggestedAmount} USDC
-   (This order is $${orderTotal.toFixed(2)})
-
-**How to send from Coinbase:**
-1. Open Coinbase app → USDC → Send
-2. Paste the address above
-3. ⚠️ Select "Base" as the network (important!)
-4. Enter amount and send
-
-Let me know when you've added funds!
-  `);
-}
-```
-
----
-
-## Flow 2: Placing an Order
+## Placing an Order
 
 ### Step 1: Check Menu and Hours
 
@@ -334,12 +354,7 @@ The 402 response includes:
     "chainId": 8453,
     "depositAddress": "0x...",  // Unique per order
     "expiresAt": "2026-02-17T15:30:00Z",
-    "expiresIn": "10 minutes",
-    "instructions": [
-      "Send exactly $18.42 USDC to the deposit address below",
-      "Network: Base (chain ID 8453)",
-      "The address expires in 10 minutes"
-    ]
+    "expiresIn": "10 minutes"
   },
   "pickup": {
     "location": "Prospect Butcher Co (Greenpoint)",
@@ -412,15 +427,13 @@ async function orderSandwich(customer, items, location = 'shop-2') {
   // 1. Create order and get payment instructions
   const paymentDetails = await createOrder(items, location, customer);
   
+  // Show user-friendly message (no technical details)
   console.log(`
 🧾 **Order Created: ${paymentDetails.orderId}**
 
 Total: $${paymentDetails.total.toFixed(2)}
 
-📍 **Send USDC to:**
-\`${paymentDetails.payment.depositAddress}\`
-
-⏰ Payment expires: ${paymentDetails.payment.expiresIn}
+Processing payment...
   `);
 
   // 2. Send payment (using customer's wallet)
@@ -429,12 +442,6 @@ Total: $${paymentDetails.total.toFixed(2)}
     paymentDetails.payment.depositAddress,
     paymentDetails.payment.amount
   );
-  
-  console.log(`
-💸 **Payment Sent!**
-Transaction: https://basescan.org/tx/${txHash}
-Waiting for confirmation...
-  `);
 
   // 3. Wait for order confirmation
   const confirmedOrder = await waitForConfirmation(paymentDetails.orderId);
@@ -445,7 +452,6 @@ Waiting for confirmation...
 🧾 Order: ${confirmedOrder.orderId}
 📍 Pickup: ${confirmedOrder.locationName}
 ⏰ Ready in: ~20 minutes
-🔗 Transaction: https://basescan.org/tx/${txHash}
 
 Your sandwich is being prepared!
   `);
@@ -460,7 +466,7 @@ Your sandwich is being prepared!
 
 | Status | Meaning |
 |--------|---------|
-| `pending_payment` | Awaiting USDC payment |
+| `pending_payment` | Awaiting payment |
 | `paid` | Payment confirmed |
 | `pending_chownow` | Queued for fulfillment |
 | `confirmed` | Order placed with kitchen |
@@ -476,7 +482,7 @@ Your sandwich is being prepared!
 | Error | Cause | Response |
 |-------|-------|----------|
 | `shop_closed` | Outside business hours | Show hours, offer to check later |
-| `insufficient_funds` | Balance < order total | Prompt to add funds |
+| `insufficient_funds` | Balance < order total | Prompt to add funds at foodcourts.ai/fund |
 | `payment_expired` | Took >10 min to pay | Need to create new order |
 | `invalid_items` | Menu items not found | Show menu, ask to re-select |
 
@@ -510,7 +516,7 @@ You'll receive POST notifications for status changes:
 
 ---
 
-## Security Notes
+## Security Notes (Technical - Agent Only)
 
 1. **Private key stays with customer.** Never store it. Customer provides for transactions.
 
@@ -518,14 +524,13 @@ You'll receive POST notifications for status changes:
 
 3. **10-minute expiration.** If payment isn't sent in time, create a new order.
 
-4. **Base network only.** Sending USDC on Ethereum mainnet won't work.
+4. **Base network only.** Payments on other networks won't work.
 
 ---
 
 ## User Communication Templates
 
 ### Order Ready
-
 ```
 ✅ **Order Placed!**
 
@@ -537,27 +542,23 @@ You'll receive POST notifications for status changes:
 **Items:**
 ${items.map(i => `• ${i.name} — $${i.price}`).join('\n')}
 
-💰 Total: $${total} USDC
-🔗 Transaction: https://basescan.org/tx/${txHash}
+💰 Total: $${total}
 
 Your sandwich is being prepared!
 ```
 
 ### Low Balance
-
 ```
 ⚠️ **Not Enough Funds**
 
-Your wallet has $${balance} USDC, but this order is $${orderTotal}.
+Your wallet has $${balance}, but this order is $${orderTotal}.
 
-To complete this order, send $${needed} more USDC to your wallet:
-\`${walletAddress}\`
+👉 Add $${needed} more at: https://foodcourts.ai/fund
 
-Remember to select "Base" as the network in Coinbase!
+Let me know when you've added funds!
 ```
 
 ### Shop Closed
-
 ```
 😔 **PBC is currently closed**
 
@@ -573,6 +574,5 @@ Would you like me to remind you when they open?
 ## References
 
 - [x402 Protocol](https://x402.org)
-- [Base Network](https://docs.base.org)
-- [BaseScan](https://basescan.org)
-- [USDC on Base](https://basescan.org/token/0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913)
+- [FoodCourts](https://foodcourts.ai)
+- [BaseScan](https://basescan.org) (for wallet verification)

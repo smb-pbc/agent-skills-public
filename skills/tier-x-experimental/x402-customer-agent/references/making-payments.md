@@ -2,6 +2,8 @@
 
 Complete implementation guide for handling 402 responses and executing payments.
 
+**Note:** This is a technical reference for agent implementation. Human-facing messaging should NOT expose these details. See SKILL.md for user-facing templates.
+
 ---
 
 ## The x402 Flow
@@ -86,15 +88,15 @@ class X402Client {
   }
 
   /**
-   * Get current USDC balance
+   * Get current balance in dollars
    */
   async getBalance() {
     const balance = await this.usdc.balanceOf(this.wallet.address);
-    return parseFloat(balance.toString()) / 1e6; // USDC has 6 decimals
+    return parseFloat(balance.toString()) / 1e6;
   }
 
   /**
-   * Send USDC payment
+   * Send payment
    */
   async sendPayment(toAddress, amountUSD) {
     const amountWei = parseUnits(amountUSD.toString(), 6);
@@ -135,11 +137,9 @@ class X402Client {
     this.validatePayment(payment);
     
     // Execute payment
-    console.log(`Paying ${payment.amount} USDC to ${payment.payTo}`);
     const txHash = await this.sendPayment(payment.payTo, payment.amount);
-    console.log(`Payment sent: ${txHash}`);
 
-    // Wait for confirmation (Base is fast, ~2 seconds)
+    // Wait for confirmation (~2 seconds on Base)
     await this.waitForConfirmation(txHash);
 
     // Retry with payment proof
@@ -421,7 +421,8 @@ async function safeX402Fetch(client, url, options) {
     if (error.message.includes('Insufficient funds')) {
       return {
         error: 'insufficient_funds',
-        message: 'Wallet needs more USDC. Ask user to top up.',
+        // Human-facing message:
+        userMessage: 'Your wallet needs more funds. Add funds at https://foodcourts.ai/fund',
         balance: await client.getBalance()
       };
     }
@@ -429,7 +430,7 @@ async function safeX402Fetch(client, url, options) {
     if (error.message.includes('not confirmed')) {
       return {
         error: 'tx_timeout',
-        message: 'Transaction taking too long. Network may be congested.'
+        userMessage: 'Payment is taking longer than expected. Please wait a moment.'
       };
     }
     
@@ -445,9 +446,9 @@ async function safeX402Fetch(client, url, options) {
 
 ---
 
-## Transaction Logging
+## Transaction Logging (Internal)
 
-Always log transactions for transparency:
+Log transactions for transparency and debugging:
 
 ```javascript
 const txLog = [];
@@ -458,7 +459,6 @@ function logTransaction(tx) {
     type: tx.type,
     to: tx.to,
     amount: tx.amount,
-    asset: 'USDC',
     txHash: tx.hash,
     merchant: tx.merchant,
     description: tx.description,
@@ -483,7 +483,7 @@ logTransaction({
 
 ---
 
-## Quick Reference
+## Quick Reference (Technical - Agent Only)
 
 | Header | Purpose |
 |--------|---------|
@@ -498,9 +498,17 @@ logTransaction({
 | 400 | Payment invalid or already used |
 | 410 | Payment request expired |
 
+| Network Details | Value |
+|-----------------|-------|
+| Network | Base |
+| Chain ID | 8453 |
+| Token | USDC |
+| USDC Contract | 0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913 |
+| USDC Decimals | 6 |
+
 ---
 
 ## Next Steps
 
 - See `examples/order-sandwich.md` for a complete working example
-- See `references/fiat-to-crypto.md` for user funding instructions
+- See `references/funding-wallet.md` for user funding instructions

@@ -2,6 +2,8 @@
 
 A complete walkthrough of using x402 to order from PBC (Prospect Butcher Co).
 
+**Note:** This is a technical reference for agent implementation. Human-facing messages are marked as such.
+
 ---
 
 ## Overview
@@ -9,7 +11,7 @@ A complete walkthrough of using x402 to order from PBC (Prospect Butcher Co).
 PBC operates an x402-enabled API for sandwich ordering. This example shows:
 1. Browsing the menu (free)
 2. Placing an order (triggers 402)
-3. Paying with USDC
+3. Paying automatically
 4. Receiving confirmation
 
 **Base URL:** `https://pbc-x402-api-ff5hxemxza-ue.a.run.app`
@@ -109,7 +111,7 @@ console.log('Response status:', response.status); // 402
 
 ---
 
-## Step 3: Execute Payment
+## Step 3: Execute Payment (Technical - Hidden from User)
 
 ```javascript
 import { Wallet, Contract, JsonRpcProvider, parseUnits } from 'ethers';
@@ -127,8 +129,8 @@ const usdc = new Contract(USDC_ADDRESS, USDC_ABI, wallet);
 // Parse 402 response
 const payment = (await response.json()).x402;
 
-// Send USDC
-const amount = parseUnits(payment.amount, 6); // 18.50 USDC
+// Send payment (USDC has 6 decimals)
+const amount = parseUnits(payment.amount, 6);
 const tx = await usdc.transfer(payment.payTo, amount);
 const receipt = await tx.wait();
 
@@ -213,9 +215,7 @@ async function orderSandwich(itemId, customerInfo, pickupTime) {
   if (response.status === 402) {
     const payment = (await response.json()).x402;
     
-    console.log(`Payment required: $${payment.amount} USDC`);
-    
-    // Validate
+    // Validate (don't expose details to user)
     if (payment.chainId !== 8453 || payment.asset !== 'USDC') {
       throw new Error('Unexpected payment type');
     }
@@ -224,8 +224,6 @@ async function orderSandwich(itemId, customerInfo, pickupTime) {
     const amount = parseUnits(payment.amount, 6);
     const tx = await usdc.transfer(payment.payTo, amount);
     const receipt = await tx.wait();
-    
-    console.log(`Paid: ${receipt.hash}`);
 
     // Retry
     response = await fetch(`${API_BASE}/api/order`, {
@@ -268,8 +266,9 @@ console.log(`Order confirmed! Pickup number: ${confirmation.confirmation_number}
 ```javascript
 if (error.message.includes('insufficient funds')) {
   const balance = await usdc.balanceOf(wallet.address) / 1e6;
-  console.log(`Need $${payment.amount} but only have $${balance} USDC`);
-  // Tell user to add funds
+  // Tell user in simple terms:
+  console.log(`Your wallet has $${balance}, but this order needs $${payment.amount}.`);
+  console.log('Add funds at: https://foodcourts.ai/fund');
 }
 ```
 
@@ -291,24 +290,36 @@ if (error.message.includes('insufficient funds')) {
 
 ---
 
-## What to Tell Your User
+## Human-Facing Messages (USE THESE)
 
-After successful order:
+### Order Confirmation (Show to User)
 
 ```
-✅ **Order Confirmed**
+✅ **Order Placed!**
 
-**Item:** Rolled Beef Sandwich
-**Price:** $18.50 USDC
-**Pickup Time:** 12:30 PM
+🧾 Order #${confirmation_number}
+📍 Pickup at: ${location.name}
+📍 Address: ${location.address}
+⏰ Ready in: ~15-20 minutes
 
-**Confirmation Number:** PBC-7X2K9
+**Items:**
+• ${item.name} — $${item.price}
 
-**Location:**
-Prospect Butcher Co.
-665 Vanderbilt Ave, Brooklyn, NY
+💰 Total: $${total}
 
-Show this confirmation number when you pick up. Enjoy your sandwich! 🥪
+Show the confirmation number when you pick up. Enjoy! 🥪
+```
+
+### Low Balance (Show to User)
+
+```
+⚠️ **Not Enough Funds**
+
+Your wallet has $${balance}, but this order is $${orderTotal}.
+
+👉 Add $${needed} more at: https://foodcourts.ai/fund
+
+Let me know when you've added funds!
 ```
 
 ---
@@ -329,4 +340,4 @@ Show this confirmation number when you pick up. Enjoy your sandwich! 🥪
 2. **Respect pickup hours** — 11am to 7pm EST
 3. **Allow 15+ minutes** for order prep
 4. **Save confirmation number** — needed for pickup
-5. **Log all transactions** — for user transparency
+5. **Log all transactions** — for user transparency (but keep technical details internal)
