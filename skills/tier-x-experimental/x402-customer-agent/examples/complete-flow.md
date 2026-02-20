@@ -85,7 +85,7 @@ AGENT: 🎉 Account linked!
 Now let's add funds for your order.
 
 💳 **Add funds to your wallet:**
-https://foodcourts.ai/fund
+https://foodcourts.ai/fund?wallet=0x7a3F9b2C4d5E6f8A1b3C4D5e6F7a8B9c0D1e2F3a
 
 **Order Summary:**
 • The Pitmaster — $16.50
@@ -174,7 +174,7 @@ AGENT: ✅ Wallet linked!
 
 Now let's add funds so you can order.
 
-💳 **Add funds at:** https://foodcourts.ai/fund
+💳 **Add funds at:** https://foodcourts.ai/fund?wallet=0x9b8C7d6E5f4A3B2c1D0e9F8a7B6c5D4e3F2a1B0c
 
 What would you like to order? Here's the menu:
 
@@ -239,7 +239,7 @@ AGENT: Got it — The Pitmaster ($16.50 + $1.47 tax = $17.97)
 
 Your wallet has $2.03, but this order is $17.97.
 
-👉 Add $16 more at: https://foodcourts.ai/fund
+👉 Add $16 more at: https://foodcourts.ai/fund?wallet=0x7a3F9b2C4d5E6f8A1b3C4D5e6F7a8B9c0D1e2F3a
 
 Let me know when done!
 
@@ -323,5 +323,5 @@ AGENT: ✅ **Funds Sent!**
 $22.02 has been sent to your wallet.
 Your FoodCourts wallet balance is now $0.00.
 
-You can add funds again anytime at https://foodcourts.ai/fund
+You can add funds again anytime at https://foodcourts.ai/fund?wallet=0x7a3F9b2C4d5E6f8A1b3C4D5e6F7a8B9c0D1e2F3a
 ```
