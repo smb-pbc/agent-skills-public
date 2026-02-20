@@ -19,7 +19,7 @@ When the user needs to add funds, say:
 
 Your wallet needs funds before I can place orders for you.
 
-👉 **Add funds here:** https://foodcourts.ai/fund
+👉 **Add funds here:** https://foodcourts.ai/fund?wallet={ADDRESS}
 
 **Order Summary:**
 • [Item] — $XX.XX
@@ -29,6 +29,8 @@ Your wallet needs funds before I can place orders for you.
 I'd suggest adding $XX to cover this order with a small buffer.
 Let me know when you've added funds!
 ```
+
+**Always use the address-based URL** (`?wallet={ADDRESS}`) so the correct wallet is pre-selected on the funding page.
 
 ---
 
@@ -66,11 +68,12 @@ When the user tries to order but doesn't have enough funds:
 ```
 ⚠️ **Not Enough Funds**
 
-Your wallet has $${balance}, but this order is $${orderTotal}.
+Your wallet has $${balance}, but this order costs about $${estimatedTotal}.
 
-👉 Add $${needed} more at: https://foodcourts.ai/fund
+💳 Add funds here: https://foodcourts.ai/fund?wallet=${walletAddress}
 
-Let me know when you've added funds!
+I'd suggest adding $${suggestedAmount} to cover this order with a small buffer.
+Let me know when you've added funds, or I'll detect them automatically!
 ```
 
 ---
@@ -109,7 +112,7 @@ A: Funds typically appear within a few minutes.
 
 The /fund page at foodcourts.ai handles the actual fiat-to-USDC conversion and deposit. Under the hood:
 
-1. User enters card details on foodcourts.ai/fund
+1. User enters card details on foodcourts.ai/fund?wallet={ADDRESS}
 2. Stripe processes the card payment
 3. USDC is purchased and sent to the user's wallet on Base
 4. Agent can check balance by querying the USDC contract
@@ -118,11 +121,68 @@ The /fund page at foodcourts.ai handles the actual fiat-to-USDC conversion and d
 
 ```javascript
 const USDC_ABI = ['function balanceOf(address owner) view returns (uint256)'];
+const USDC_ADDRESS = '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913';
+const BASE_RPC = 'https://mainnet.base.org';
 
-async function checkBalance(walletAddress) {
+async function getUSDCBalance(walletAddress) {
+  const provider = new JsonRpcProvider(BASE_RPC);
   const usdc = new Contract(USDC_ADDRESS, USDC_ABI, provider);
   const balance = await usdc.balanceOf(walletAddress);
   return parseFloat(balance.toString()) / 1e6; // Convert to dollars
+}
+```
+
+### Balance Polling: waitForFunding()
+
+After directing the user to add funds, poll the on-chain balance to detect when funds arrive:
+
+```javascript
+/**
+ * Poll USDC balance every 10 seconds until it increases or timeout (5 min).
+ * @param walletAddress - The wallet to monitor
+ * @param currentBalance - Balance before funding (in dollars)
+ * @returns New balance if funds detected, null if timeout
+ */
+async function waitForFunding(walletAddress, currentBalance) {
+  const POLL_INTERVAL = 10_000; // 10 seconds
+  const TIMEOUT = 300_000;      // 5 minutes
+  const startTime = Date.now();
+
+  while (Date.now() - startTime < TIMEOUT) {
+    await new Promise(r => setTimeout(r, POLL_INTERVAL));
+
+    const newBalance = await getUSDCBalance(walletAddress);
+    if (newBalance > currentBalance) {
+      return newBalance; // Funds detected!
+    }
+  }
+
+  return null; // Timeout — no funds detected
+}
+```
+
+### Manual Check Fallback
+
+If polling times out or the user says they've funded, do a one-time manual check:
+
+```javascript
+async function manualFundingCheck(walletAddress, previousBalance) {
+  const currentBalance = await getUSDCBalance(walletAddress);
+
+  if (currentBalance > previousBalance) {
+    return {
+      funded: true,
+      previousBalance,
+      currentBalance,
+      added: currentBalance - previousBalance
+    };
+  }
+
+  return {
+    funded: false,
+    currentBalance,
+    message: "I don't see new funds yet. Funds usually arrive within a few minutes. Want to try again?"
+  };
 }
 ```
 

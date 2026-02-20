@@ -20,7 +20,7 @@ triggers:
 **Purpose:** Enable AI agents to order food via automated payments.
 **Supports:** New user onboarding OR existing user wallet linking (auto-detects)
 **API Base:** foodcourts.ai
-**Last Updated:** 2026-02-17
+**Last Updated:** 2026-02-19
 
 ---
 
@@ -32,7 +32,9 @@ triggers:
 | Hours API | `pbc.foodcourts.ai/api/hours` |
 | Order API | `pbc.foodcourts.ai/api/order` |
 | Order Status | `pbc.foodcourts.ai/api/order/:id` |
-| Fund Page | `foodcourts.ai/fund` |
+| Fund Page | `foodcourts.ai/fund?wallet={ADDRESS}` |
+| Link Wallet | `foodcourts.ai/profile/link-wallet?wallet={ADDRESS}` |
+| Sign Up | `foodcourts.ai/signup?wallet={ADDRESS}` |
 
 ---
 
@@ -58,7 +60,7 @@ They just need to connect an agentic wallet.
 2. Create wallet (with key handling below)
 3. Show wallet proof URL
 4. Direct them to link: https://foodcourts.ai/profile/link-wallet?wallet=[ADDRESS]
-5. Guide them to fund via https://foodcourts.ai/fund
+5. Guide them to fund via https://foodcourts.ai/fund?wallet=[ADDRESS]
 6. Ready to order
 ```
 
@@ -195,51 +197,59 @@ await waitForUserConfirmation("I understand my key is saved in the keychain");
 
 ## Step 2: Link Wallet to Account
 
+Choose the right URL based on the user's account status:
+
+| User Status | URL | Notes |
+|-------------|-----|-------|
+| **New user** (no account) | `https://foodcourts.ai/signup?wallet={ADDRESS}` | Creates account, then auto-links wallet |
+| **Existing user** (has account) | `https://foodcourts.ai/profile/link-wallet?wallet={ADDRESS}` | Confirms and links wallet |
+| **Unknown** (not sure) | `https://foodcourts.ai/profile/link-wallet?wallet={ADDRESS}` | Handles login redirect; has "Sign up" link for new users |
+
 ### For NEW Users (no account):
 ```
-AGENT: Now let's create your FoodCourts account.
+AGENT: Now let's create your FoodCourts account and link your wallet.
 
-**Step 1: Sign up**
-👉 https://foodcourts.ai/signup
+👉 **Sign up here:**
+https://foodcourts.ai/signup?wallet={ADDRESS}
 
-Sign in with Google or create an account with email.
+Sign in with Google — your wallet will be linked automatically!
 
-**Step 2: Link your wallet**
-After signup, go to your profile and click "+ Add Wallet"
-👉 https://foodcourts.ai/profile
-
-Paste your wallet address:
-`[ADDRESS]`
-
-Let me know when you've linked it!
+Come back here once you're done.
 ```
 
 ### For EXISTING Users (has account):
 ```
 AGENT: Now let's link your wallet to your FoodCourts account.
 
-**Go to your profile and click "+ Add Wallet":**
-👉 https://foodcourts.ai/profile
+👉 **Click here to link your wallet:**
+https://foodcourts.ai/profile/link-wallet?wallet={ADDRESS}
 
-Paste your wallet address:
-`[ADDRESS]`
+Make sure you're logged in, then click "Confirm" to link.
 
-Let me know when you've linked it!
+Let me know when you're done!
 ```
 
-**Note:** The `?wallet=` URL parameter is for pre-filling only — users must still 
-manually confirm linking via the "+ Add Wallet" button on their profile.
+### Default (unknown status):
+Use the link-wallet URL — it handles login redirects and includes a "Sign up" link for users who don't have an account yet.
 
 ---
 
 ## Step 3: Fund the Wallet
+
+Always use the address-based funding URL so the correct wallet is pre-selected:
+
+```
+https://foodcourts.ai/fund?wallet={ADDRESS}
+```
+
+The system verifies that the address matches the user's linked wallets.
 
 **Human-facing message (simple, no crypto jargon):**
 ```
 AGENT: Now let's add funds so you can place orders.
 
 💳 **Add funds to your wallet:**
-https://foodcourts.ai/fund
+https://foodcourts.ai/fund?wallet={ADDRESS}
 
 **Order Summary:**
 • The Pitmaster — $16.50
@@ -304,17 +314,87 @@ async function checkWalletStatus(walletAddress) {
   if (!walletAddress) {
     return { ready: false, reason: 'no_wallet' };
   }
-  
+
   const balance = await getUSDCBalance(walletAddress);
   if (balance < 10) {  // Minimum for a sandwich order
     return { ready: false, reason: 'low_balance', balance };
   }
-  
+
   return { ready: true, balance };
 }
 ```
 
 **Key principle:** Don't create a wallet until the customer wants to order. Browsing the menu doesn't require a wallet.
+
+---
+
+## Pre-Order Balance Verification
+
+Before placing any order, always verify the wallet has sufficient funds:
+
+```javascript
+async function verifyBalanceForOrder(walletAddress, items) {
+  // 1. Get current balance
+  const balance = await getUSDCBalance(walletAddress);
+
+  // 2. Estimate order total
+  const subtotal = items.reduce((sum, item) => sum + item.price, 0);
+  const tax = subtotal * 0.08875; // NYC tax rate
+  const serviceFee = 1.00;
+  const estimatedTotal = subtotal + tax + serviceFee;
+
+  // 3. Compare
+  if (balance < estimatedTotal) {
+    return {
+      sufficient: false,
+      balance,
+      estimatedTotal,
+      shortfall: estimatedTotal - balance
+    };
+  }
+
+  return { sufficient: true, balance, estimatedTotal };
+}
+```
+
+If balance is insufficient, trigger the **Wallet Refill Flow** below.
+
+---
+
+## Wallet Refill Flow
+
+When the agent detects the wallet balance is too low for an order:
+
+### Step 1: Detect Low Balance
+Use `verifyBalanceForOrder()` above to determine the shortfall.
+
+### Step 2: Generate Funding URL
+```
+https://foodcourts.ai/fund?wallet={AGENT_WALLET_ADDRESS}
+```
+The `?wallet=` parameter pre-selects the correct wallet on the funding page.
+
+### Step 3: Present to User
+Use the "Wallet Balance Low" communication template (see below). Keep messaging simple — no crypto jargon:
+```
+Your wallet balance is $X.XX, but this order costs about $Y.YY.
+Please add funds here: https://foodcourts.ai/fund?wallet={ADDRESS}
+
+Let me know when you've added funds, or I'll detect them automatically!
+```
+
+### Step 4: Poll for Balance Increase
+```javascript
+// Poll on-chain balance every 10 seconds (5 min timeout)
+// See references/funding-wallet.md for full implementation
+const newBalance = await waitForFunding(walletAddress, currentBalance);
+```
+
+### Step 5: Confirm Receipt
+When balance increases:
+```
+I see the funds! Your wallet now has $Z.ZZ. Ready to place the order?
+```
 
 ---
 
@@ -521,7 +601,7 @@ Your sandwich is being prepared!
 | Error | Cause | Response |
 |-------|-------|----------|
 | `shop_closed` | Outside business hours | Show hours, offer to check later |
-| `insufficient_funds` | Balance < order total | Prompt to add funds at foodcourts.ai/fund |
+| `insufficient_funds` | Balance < order total | Trigger Wallet Refill Flow (see above) |
 | `payment_expired` | Took >10 min to pay | Need to create new order |
 | `invalid_items` | Menu items not found | Show menu, ask to re-select |
 
@@ -586,15 +666,52 @@ ${items.map(i => `• ${i.name} — $${i.price}`).join('\n')}
 Your sandwich is being prepared!
 ```
 
-### Low Balance
+### Wallet Balance Low
 ```
 ⚠️ **Not Enough Funds**
 
-Your wallet has $${balance}, but this order is $${orderTotal}.
+Your wallet has $${balance}, but this order costs about $${estimatedTotal}.
 
-👉 Add $${needed} more at: https://foodcourts.ai/fund
+💳 **Add funds here:**
+https://foodcourts.ai/fund?wallet=${walletAddress}
 
-Let me know when you've added funds!
+I'd suggest adding $${suggestedAmount} to cover this order with a small buffer.
+Let me know when you've added funds, or I'll detect them automatically!
+```
+
+### Waiting for Funds
+```
+⏳ **Waiting for Funds**
+
+I'm monitoring your wallet in the background. As soon as the funds arrive,
+I'll let you know and we can proceed with your order.
+
+You can add funds here if you haven't already:
+https://foodcourts.ai/fund?wallet=${walletAddress}
+```
+
+### Funds Received
+```
+✅ **Funds Received!**
+
+Your wallet balance is now $${newBalance}.
+
+Ready to place your order?
+```
+
+### Wallet Not Linked
+```
+🔗 **Wallet Not Linked**
+
+Before I can place orders, your wallet needs to be linked to a FoodCourts account.
+
+👉 **Link your wallet:**
+https://foodcourts.ai/profile/link-wallet?wallet=${walletAddress}
+
+**Don't have an account yet?**
+👉 https://foodcourts.ai/signup?wallet=${walletAddress}
+
+Let me know when you're set up!
 ```
 
 ### Shop Closed
